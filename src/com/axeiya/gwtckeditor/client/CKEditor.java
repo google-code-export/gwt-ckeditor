@@ -76,8 +76,10 @@ public class CKEditor extends Widget {
         	setElement(div);
         }else{
         	textArea = new TextArea();
-        	textArea.setHeight(config.getHeight());
-        	textArea.setWidth(config.getWidth());
+        	if(config.getHeight() != null)
+        		textArea.setHeight(config.getHeight());
+        	if(config.getWidth() != null)
+        		textArea.setWidth(config.getWidth());
         	setElement(div);
         	div.appendChild(textArea.getElement());
         }
