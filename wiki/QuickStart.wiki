@@ -2,7 +2,8 @@
 
 ==Install==
 
-Download the JAR distribution available in Download section
+Download the JAR distribution available in Download section.
+
 Add the JAR to your classpath
 
 Edit your App.gwt.xml file :
