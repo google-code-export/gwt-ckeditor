@@ -79,7 +79,7 @@ public class CKEditor extends Widget {
      * Initialize the editor
      */
     private void initCKEditor(){
-        DivElement div = Document.get().createDivElement();
+        Element div = DOM.createDiv();
         
         if(GWT.isScript() || enabledInHostedMode){
         	baseTextArea = DOM.createTextArea();
@@ -106,16 +106,16 @@ public class CKEditor extends Widget {
     	}
     }
     
-    private static native void replaceTextArea(Object o, JavaScriptObject config) /*-{
+    private native void replaceTextArea(Object o, JavaScriptObject config) /*-{
         this.@com.axeiya.gwtckeditor.client.CKEditor::editor = $wnd.CKEDITOR.replace(o,config);
     }-*/;
     
-    private static native String getNativeText() /*-{
+    private native String getNativeText() /*-{
     	var e = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
     	return e.getData();
 	}-*/;
     
-    private static native void setNativeText(String text) /*-{
+    private native void setNativeText(String text) /*-{
 		var e = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
 		e.setData(text,new Function());
 	}-*/;
@@ -146,6 +146,7 @@ public class CKEditor extends Widget {
      */
     public void setText(String text){
     	if(GWT.isScript() || enabledInHostedMode){
+    		GWT.log(editor.toString(), null);
     		setNativeText(text);
     	}else{
     		textArea.setText(text);
