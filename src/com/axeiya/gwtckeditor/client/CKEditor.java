@@ -14,39 +14,55 @@
  */
 package com.axeiya.gwtckeditor.client;
 
+import com.axeiya.gwtckeditor.client.events.HasSaveHandlers;
+import com.axeiya.gwtckeditor.client.events.SaveEvent;
+import com.axeiya.gwtckeditor.client.events.SaveHandler;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.FormElement;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Event.NativePreviewEvent;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
+import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 
 /**
  * This class provides a CKEdtior as a Widget
  * 
  * @author Damien Picard <damien.picard@axeiya.com>
  */
-public class CKEditor extends Widget {
+public class CKEditor extends Composite implements HasSaveHandlers<CKEditor> {
     
 	private String name;
     private JavaScriptObject editor;
     private TextArea textArea;
     private Element baseTextArea;
     private CKConfig config;
-    private boolean enabledInHostedMode = false;
+    private boolean enabledInHostedMode = true;
     
     /**
-     * Creates an editor with the CKConfig.basic configuration. By default, the CKEditor is disabled in hosted mode ; then, the CKEditor is replaced by a simple TextArea
+     * Creates an editor with the CKConfig.basic configuration. By default, the CKEditor is enabled in hosted mode ; if not, the CKEditor is replaced by a simple TextArea
      */
     public CKEditor(){
     	this(CKConfig.basic);
     }
     
     /**
-     * Creates an editor with the given configuration. By default, the CKEditor is disabled in hosted mode ; then, the CKEditor is replaced by a simple TextArea
+     * Creates an editor with the given configuration. By default, the CKEditor is enabled in hosted mode ; if not, the CKEditor is replaced by a simple TextArea
      * @param config The configuration
      */
     public CKEditor(CKConfig config){
@@ -80,6 +96,7 @@ public class CKEditor extends Widget {
      */
     private void initCKEditor(){
         Element div = DOM.createDiv();
+        FormPanel form = new FormPanel();
         
         if(GWT.isScript() || enabledInHostedMode){
         	baseTextArea = DOM.createTextArea();
@@ -87,16 +104,17 @@ public class CKEditor extends Widget {
         	div.appendChild(baseTextArea);
         	DOM.setElementAttribute(baseTextArea, "name", name);
         	DOM.setElementAttribute(baseTextArea, "class", "ckeditor");
-        	setElement(div);
+        	this.sinkEvents(Event.ONCLICK);
         }else{
         	textArea = new TextArea();
         	if(config.getHeight() != null)
         		textArea.setHeight(config.getHeight());
         	if(config.getWidth() != null)
         		textArea.setWidth(config.getWidth());
-        	setElement(div);
         	div.appendChild(textArea.getElement());
         }
+        form.getElement().appendChild(div);
+        initWidget(form);
     }
     
     @Override
@@ -160,4 +178,33 @@ public class CKEditor extends Widget {
     public void setData(String data){
     	setText(data);
     }
+    
+    /**
+     * Used for catching Save event
+     * @param o
+     * @return
+     */
+    private static native String getParentClassname(JavaScriptObject o) /*-{
+    	var classname = o.parentNode.getAttribute("class");
+    	if(classname == null)
+    		return o.parentNode.className;
+    	return classname;
+    }-*/;
+    
+    @Override
+    public void onBrowserEvent(Event event) {
+    	super.onBrowserEvent(event);
+    	String classString = getParentClassname(event.getEventTarget());
+    	String[] classes = classString.split(" ");
+    	for(String c:classes){
+    		if(c.trim().equals("cke_button_save")){
+    			SaveEvent.fire(this, this, this.getText());
+    		}
+    	}
+    }
+    
+	@Override
+	public HandlerRegistration addSaveHandler(SaveHandler<CKEditor> handler) {
+		return addHandler(handler,SaveEvent.getType());
+	}
 }

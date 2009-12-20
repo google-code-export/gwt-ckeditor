@@ -14,7 +14,9 @@
  */
 package com.axeiya.gwtckeditor.client;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.i18n.client.*;
 
 /**
  * Defines a configuration environment for a CKEditor
@@ -28,6 +30,14 @@ public class CKConfig {
 	private String uiColor;
 	private String height;
 	private String width;
+	private int resizeMinWidth;
+	private int resizeMinHeight;
+	private int resizeMaxWidth;
+	private int resizeMaxHeight;
+	private int baseFloatZIndex; 
+	private String language;
+	
+	JavaScriptObject config = JavaScriptObject.createObject();
 	
 	/**
 	 * Defines existing toolbar configuration in CKEDITOR environment
@@ -68,10 +78,31 @@ public class CKConfig {
 	public CKConfig(PRESET_TOOLBAR toolbar){
 		initConfig();
 		setToolbar(toolbar);
+		LocaleInfo l = LocaleInfo.getCurrentLocale();
+		//GWT.log("Locale : "+l.getLocaleName(),null);//always returns default
+		if(l.getLocaleName().equals("default")){
+			GWT.log("LocaleProperty : "+getLocaleProperty(), null);
+			this.setLanguage(getLocaleProperty());
+		}
 	}
 	
-	private static native void initConfig() /*-{
+	private native void initConfig() /*-{
 		
+	}-*/;
+	
+	private native String getLocaleProperty() /*-{
+		var metaArray = $doc.getElementsByTagName("meta");
+		for (var i=0;i<metaArray.length;i++){
+			if (metaArray[i].getAttribute("name") == "gwt:property"){
+				var content = metaArray[i].getAttribute("content");
+				var contentArray = content.split("=");
+				if(contentArray[0] == "locale"){
+					var localeArray = contentArray[1].split("_");
+					return localeArray[0];
+				}
+			}
+		}
+		return "en";
 	}-*/;
 	
 	/**
@@ -109,6 +140,7 @@ public class CKConfig {
 	 */
 	public void setUiColor(String uiColor){
 		this.uiColor = uiColor;
+		setNativeUiColor(uiColor);
 	}
 	
 	/**
@@ -117,6 +149,7 @@ public class CKConfig {
 	 */
 	public void setHeight(String height) {
 		this.height = height;
+		setNativeHeight(height);
 	}
 
 	/**
@@ -125,6 +158,61 @@ public class CKConfig {
 	 */
 	public void setWidth(String width) {
 		this.width = width;
+		setNativeWidth(width);
+	}
+	
+	/**
+	 * Defines the base Z-index for floating dialogs and popups.
+	 * @param zIndex The base Z-index for floating dialogs and popups.
+	 */
+	public void setBaseFloatZIndex(int zIndex){
+		baseFloatZIndex = zIndex;
+		setNativeBaseFloatZIndex(zIndex);
+	}
+	
+	/**
+	 * The user interface language localization to use. If empty, the editor automatically localize the editor to the user language, if supported, otherwise the CKEDITOR.config.defaultLanguage language is used. 
+	 * @param language
+	 */
+	public void setLanguage(String language){
+		this.language = language;
+		setNativeLanguage(language);
+	}
+	
+	/**
+	 * The minimum editor width, in pixels, when resizing it with the resize handle. 
+	 * @param resizeMinWidth
+	 */
+	public void setResizeMinWidth(int resizeMinWidth) {
+		this.resizeMinWidth = resizeMinWidth;
+		setNativeMinWidth(resizeMinWidth);
+	}
+
+	/**
+	 * The minimum editor height, in pixels, when resizing it with the resize handle.
+	 * @param resizeMinHeight
+	 */
+	public void setResizeMinHeight(int resizeMinHeight) {
+		this.resizeMinHeight = resizeMinHeight;
+		setNativeMinHeight(resizeMinHeight);
+	}
+	
+	/**
+	 * The maximum editor width, in pixels, when resizing it with the resize handle. 
+	 * @param resizeMaxWidth
+	 */
+	public void setResizeMaxWidth(int resizeMaxWidth) {
+		this.resizeMaxWidth = resizeMaxWidth;
+		setNativeMaxWidth(resizeMaxWidth);
+	}
+	
+	/**
+	 * The maximum editor height, in pixels, when resizing it with the resize handle. 
+	 * @param resizeMaxHeight
+	 */
+	public void setResizeMaxHeight(int resizeMaxHeight) {
+		this.resizeMaxHeight = resizeMaxHeight;
+		setNativeMaxHeight(resizeMaxHeight);
 	}
 
 	/**
@@ -132,48 +220,58 @@ public class CKConfig {
 	 * @return a CKEDITOR.config object
 	 */
 	public JavaScriptObject getConfigObject(){
-		JavaScriptObject config = JavaScriptObject.createObject();
+		
 		if(toolbarName != null){
-			config = setToolbarNameObject(config, toolbarName);
+			setToolbarNameObject(toolbarName);
 		}else{
-			config = setToolbarObject(config,toolbar.getRepresentation());
-		}
-		if(uiColor != null){
-			config = setUiColor(config,uiColor);
-		}
-		if(height != null){
-			config = setHeight(config, height);
-		}
-		if(width != null){
-			config = setWidth(config, width);
+			setToolbarObject(toolbar.getRepresentation());
 		}
 		return config;
 	}
 	
-	private static native JavaScriptObject setToolbarNameObject(JavaScriptObject config, String name) /*-{
-		config.toolbar = name;
-		return config;
+	private native void setToolbarNameObject(String name) /*-{
+		this.@com.axeiya.gwtckeditor.client.CKConfig::config.toolbar = name;
 	}-*/;
 	
-	private static native JavaScriptObject setUiColor(JavaScriptObject config, String uiColor) /*-{
-		config.uiColor = uiColor;
-		return config;
+	private native void setNativeUiColor(String uiColor) /*-{
+		this.@com.axeiya.gwtckeditor.client.CKConfig::config.uiColor = uiColor;
 	}-*/;
 	
-	private static native JavaScriptObject setHeight(JavaScriptObject config, String height) /*-{
-		config.height = height;
-		return config;
+	private native void setNativeHeight(String height) /*-{
+		this.@com.axeiya.gwtckeditor.client.CKConfig::config.height = height;
 	}-*/;
 	
-	private static native JavaScriptObject setWidth(JavaScriptObject config, String width) /*-{
-		config.width = width;
-		return config;
+	private native void setNativeWidth(String width) /*-{
+		this.@com.axeiya.gwtckeditor.client.CKConfig::config.width = width;
 	}-*/;
 	
-	private static native JavaScriptObject setToolbarObject(JavaScriptObject config, JavaScriptObject toolbarArray) /*-{
+	private native void setNativeBaseFloatZIndex(int zIndex) /*-{
+		this.@com.axeiya.gwtckeditor.client.CKConfig::config.baseFloatZIndex = zIndex;
+	}-*/;
+	
+	private native void setNativeLanguage(String language) /*-{
+		this.@com.axeiya.gwtckeditor.client.CKConfig::config.language = language;
+	}-*/;
+	
+	private native void setNativeMaxWidth(int width) /*-{
+		this.@com.axeiya.gwtckeditor.client.CKConfig::config.resize_maxWidth = width;
+	}-*/;
+	
+	private native void setNativeMinWidth(int width) /*-{
+		this.@com.axeiya.gwtckeditor.client.CKConfig::config.resize_minWidth = width;
+	}-*/;
+	
+	private native void setNativeMaxHeight(int height) /*-{
+		this.@com.axeiya.gwtckeditor.client.CKConfig::config.resize_maxHeight = height;
+	}-*/;
+	
+	private native void setNativeMinHeight(int height) /*-{
+		this.@com.axeiya.gwtckeditor.client.CKConfig::config.resize_minHeight = height;
+	}-*/;
+	
+	private native void setToolbarObject(JavaScriptObject toolbarArray) /*-{
 		$wnd.CKEDITOR.config.toolbar_temp = toolbarArray;
-		config.toolbar = 'temp';
-		return config;
+		this.@com.axeiya.gwtckeditor.client.CKConfig::config.toolbar = 'temp';
 	}-*/;
 
 	/**
@@ -191,4 +289,33 @@ public class CKConfig {
 	public String getWidth() {
 		return width;
 	}
+
+	public String getUiColor() {
+		return uiColor;
+	}
+
+	public int getResizeMinWidth() {
+		return resizeMinWidth;
+	}
+
+	public int getResizeMinHeight() {
+		return resizeMinHeight;
+	}
+
+	public int getResizeMaxWidth() {
+		return resizeMaxWidth;
+	}
+
+	public int getResizeMaxHeight() {
+		return resizeMaxHeight;
+	}
+
+	public int getBaseFloatZIndex() {
+		return baseFloatZIndex;
+	}
+
+	public String getLanguage() {
+		return language;
+	}
+	
 }
