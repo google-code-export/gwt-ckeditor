@@ -18,7 +18,7 @@ public class SaveEvent<T> extends GwtEvent<SaveHandler<T>> {
 	}
 
 	protected void dispatch(SaveHandler<T> handler) {
-		handler.onTitreChange(this);
+		handler.onSave(this);
 	}
 	
 	private final T target;
