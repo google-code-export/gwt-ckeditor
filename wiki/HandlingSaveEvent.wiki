@@ -13,7 +13,7 @@ CKEditor ckEditor = new CKEditor(CKConfig.full);
 
 ckEditor.addSaveHandler(new SaveHandler<CKEditor>() {
     @Override
-    public void onTitreChange(SaveEvent<CKEditor> event) {
+    public void onSave(SaveEvent<CKEditor> event) {
         CKEditor target = event.getTarget();//The CKEditor which generates the save event
         String content = event.getText();//The content to save (also available in target)
     }
