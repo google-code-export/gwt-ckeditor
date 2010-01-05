@@ -36,6 +36,9 @@ public class CKConfig {
 	private int resizeMaxHeight;
 	private int baseFloatZIndex; 
 	private String language;
+	private boolean entities;
+	private boolean entities_greek;
+	private boolean entities_latin;
 	
 	JavaScriptObject config = JavaScriptObject.createObject();
 	
@@ -216,6 +219,33 @@ public class CKConfig {
 	}
 
 	/**
+	 * Whether to use HTML entities in the output.
+	 * @param entities
+	 */
+	public void setEntities(boolean entities) {
+		this.entities = entities;
+		setNativeEntities(entities);
+	}
+
+	/**
+	 * Whether to convert some symbols, mathematical symbols, and Greek letters to HTML entities. This may be more relevant for users typing text written in Greek. The list of entities can be found at the W3C HTML 4.01 Specification, section 24.3.1. 
+	 * @param entitiesGreek
+	 */
+	public void setEntities_greek(boolean entitiesGreek) {
+		entities_greek = entitiesGreek;
+		setNativeEntitiesGreek(entitiesGreek);
+	}
+
+	/**
+	 * Whether to convert some Latin characters (Latin alphabet No. 1, ISO 8859-1) to HTML entities. The list of entities can be found at the W3C HTML 4.01 Specification, section 24.2.1. 
+	 * @param entitiesLatin
+	 */
+	public void setEntities_latin(boolean entitiesLatin) {
+		entities_latin = entitiesLatin;
+		setNativeEntitiesLatin(entitiesLatin);
+	}
+
+	/**
 	 * Returns a CKEDITOR.config object with the defined configuration
 	 * @return a CKEDITOR.config object
 	 */
@@ -269,6 +299,18 @@ public class CKConfig {
 		this.@com.axeiya.gwtckeditor.client.CKConfig::config.resize_minHeight = height;
 	}-*/;
 	
+	private native void setNativeEntities(boolean entities) /*-{
+		this.@com.axeiya.gwtckeditor.client.CKConfig::config.entities = entities;
+	}-*/;
+	
+	private native void setNativeEntitiesGreek(boolean entitiesGreek) /*-{
+		this.@com.axeiya.gwtckeditor.client.CKConfig::config.entities_greek = entitiesGreek;
+	}-*/;
+	
+	private native void setNativeEntitiesLatin(boolean entitiesLatin) /*-{
+		this.@com.axeiya.gwtckeditor.client.CKConfig::config.entities_latin = entitiesLatin;
+	}-*/;
+	
 	private native void setToolbarObject(JavaScriptObject toolbarArray) /*-{
 		$wnd.CKEDITOR.config.toolbar_temp = toolbarArray;
 		this.@com.axeiya.gwtckeditor.client.CKConfig::config.toolbar = 'temp';
@@ -316,6 +358,18 @@ public class CKConfig {
 
 	public String getLanguage() {
 		return language;
+	}
+
+	public boolean isEntities() {
+		return entities;
+	}
+
+	public boolean isEntities_greek() {
+		return entities_greek;
+	}
+
+	public boolean isEntities_latin() {
+		return entities_latin;
 	}
 	
 }
