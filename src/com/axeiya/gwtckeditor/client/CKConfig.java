@@ -312,7 +312,7 @@ public class CKConfig {
 	}-*/;
 	
 	private native void setToolbarObject(JavaScriptObject toolbarArray) /*-{
-		$wnd.CKEDITOR.config.toolbar_temp = toolbarArray;
+		this.@com.axeiya.gwtckeditor.client.CKConfig::config.toolbar_temp = toolbarArray;
 		this.@com.axeiya.gwtckeditor.client.CKConfig::config.toolbar = 'temp';
 	}-*/;
 
