@@ -119,7 +119,7 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor> {
     
     @Override
     protected void onLoad(){
-    	if(GWT.isScript() || enabledInHostedMode){
+    	if((GWT.isScript() || enabledInHostedMode)&&!this.isOrWasAttached()){
     		replaceTextArea(baseTextArea, this.config.getConfigObject());
     	}
     }
