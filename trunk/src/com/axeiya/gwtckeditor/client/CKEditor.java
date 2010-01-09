@@ -53,6 +53,7 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor> {
     private Element baseTextArea;
     private CKConfig config;
     private boolean enabledInHostedMode = true;
+    private boolean replaced = false;
     
     /**
      * Creates an editor with the CKConfig.basic configuration. By default, the CKEditor is enabled in hosted mode ; if not, the CKEditor is replaced by a simple TextArea
@@ -103,7 +104,6 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor> {
         	name = HTMLPanel.createUniqueId();
         	div.appendChild(baseTextArea);
         	DOM.setElementAttribute(baseTextArea, "name", name);
-        	DOM.setElementAttribute(baseTextArea, "class", "ckeditor");
         	this.sinkEvents(Event.ONCLICK);
         }else{
         	textArea = new TextArea();
@@ -119,7 +119,8 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor> {
     
     @Override
     protected void onLoad(){
-    	if((GWT.isScript() || enabledInHostedMode)&&!this.isOrWasAttached()){
+    	if((GWT.isScript() || enabledInHostedMode)&&!replaced){
+    		replaced = true;
     		replaceTextArea(baseTextArea, this.config.getConfigObject());
     	}
     }
@@ -164,7 +165,6 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor> {
      */
     public void setText(String text){
     	if(GWT.isScript() || enabledInHostedMode){
-    		GWT.log(editor.toString(), null);
     		setNativeText(text);
     	}else{
     		textArea.setText(text);
