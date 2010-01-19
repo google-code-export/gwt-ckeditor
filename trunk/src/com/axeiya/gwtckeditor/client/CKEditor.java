@@ -51,6 +51,7 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor> {
     private JavaScriptObject editor;
     private TextArea textArea;
     private Element baseTextArea;
+    private JavaScriptObject dataProcessor;
     private CKConfig config;
     private boolean enabledInHostedMode = true;
     private boolean replaced = false;
@@ -122,11 +123,24 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor> {
     	if((GWT.isScript() || enabledInHostedMode)&&!replaced){
     		replaced = true;
     		replaceTextArea(baseTextArea, this.config.getConfigObject());
+    		
+    		if(config.getBreakLineChars() != null)
+    		{
+    			setNativeBreakLineChars(config.getBreakLineChars());
+    		}
+    		
+    		if(config.getSelfClosingEnd() != null)
+    		{
+    			setNativeSelfClosingEnd(config.getSelfClosingEnd());
+    		}
     	}
     }
     
     private native void replaceTextArea(Object o, JavaScriptObject config) /*-{
+    	
         this.@com.axeiya.gwtckeditor.client.CKEditor::editor = $wnd.CKEDITOR.replace(o,config);
+        this.@com.axeiya.gwtckeditor.client.CKEditor::dataProcessor = new $wnd.CKEDITOR.htmlDataProcessor();
+        this.@com.axeiya.gwtckeditor.client.CKEditor::editor.dataProcessor = this.@com.axeiya.gwtckeditor.client.CKEditor::dataProcessor;
     }-*/;
     
     private native String getNativeText() /*-{
@@ -137,6 +151,17 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor> {
     private native void setNativeText(String text) /*-{
 		var e = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
 		e.setData(text,new Function());
+	}-*/;
+    
+    private native void setNativeBreakLineChars(String breakLineChars) /*-{
+    	
+    	var dataProcessor = this.@com.axeiya.gwtckeditor.client.CKEditor::dataProcessor;
+    	dataProcessor.writer.lineBreakChars = breakLineChars;
+    }-*/;
+    
+    private native void setNativeSelfClosingEnd(String selfClosingEnd) /*-{
+    var dataProcessor = this.@com.axeiya.gwtckeditor.client.CKEditor::dataProcessor;
+	dataProcessor.writer.selfClosingEnd = selfClosingEnd;
 	}-*/;
 
     /**

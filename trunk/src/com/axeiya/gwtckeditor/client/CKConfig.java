@@ -30,6 +30,9 @@ public class CKConfig {
 	private String uiColor;
 	private String height;
 	private String width;
+	private String breakLineChars;
+	private String enterMode;
+	private String selfClosingEnd;
 	private int resizeMinWidth;
 	private int resizeMinHeight;
 	private int resizeMaxWidth;
@@ -66,6 +69,7 @@ public class CKConfig {
 	 * Default basic configuration
 	 */
 	public static CKConfig basic = new CKConfig(PRESET_TOOLBAR.BASIC);
+	
 	
 	/**
 	 * Creates a default config with the FULL toolbar
@@ -244,6 +248,35 @@ public class CKConfig {
 		entities_latin = entitiesLatin;
 		setNativeEntitiesLatin(entitiesLatin);
 	}
+	
+	/**
+	 * The characters to use when occurs a breakLine (e.g: "\n")
+	 * @param breakLineChars
+	 */
+	public void setBreakLineChars(String breakLineChars)
+	{
+		this.breakLineChars = breakLineChars;
+		
+	}
+	
+	
+	/**
+	 * The way a tag self Close himself (e.g : "/>" or " />"
+	 * @param selfClosingEnd
+	 */
+	public void setSelfClosingEnd(String selfClosingEnd) {
+		this.selfClosingEnd = selfClosingEnd;
+	}
+	
+	
+	/**
+	 * What kind of tag will be written when pressing Enter (p|div|br) 
+	 * @param enterMode
+	 */
+	public void setEnterMode(String enterMode) {
+		this.enterMode = enterMode;
+		setNativeEnterMode(enterMode);
+	}
 
 	/**
 	 * Returns a CKEDITOR.config object with the defined configuration
@@ -258,6 +291,10 @@ public class CKConfig {
 		}
 		return config;
 	}
+	
+	private native void setNativeEnterMode(String enterMode)/*-{
+		this.@com.axeiya.gwtckeditor.client.CKConfig::config.enterMode = enterMode;
+	}-*/;
 	
 	private native void setToolbarNameObject(String name) /*-{
 		this.@com.axeiya.gwtckeditor.client.CKConfig::config.toolbar = name;
@@ -315,6 +352,8 @@ public class CKConfig {
 		this.@com.axeiya.gwtckeditor.client.CKConfig::config.toolbar_temp = toolbarArray;
 		this.@com.axeiya.gwtckeditor.client.CKConfig::config.toolbar = 'temp';
 	}-*/;
+	
+	
 
 	/**
 	 * Returns the config height
@@ -371,5 +410,20 @@ public class CKConfig {
 	public boolean isEntities_latin() {
 		return entities_latin;
 	}
+
+	public String getBreakLineChars() {
+		return breakLineChars;
+	}
+
+	public String getSelfClosingEnd() {
+		return selfClosingEnd;
+	}
+
+	public String getEnterMode() {
+		return enterMode;
+	}
+	
+	
+	
 	
 }
