@@ -1,3 +1,4 @@
+You can test this sample here : http://apps.axeiya.com/TestCK/
 {{{
 public void onModuleLoad() {
 		final CKEditor cke = new CKEditor(CKConfig.full);
