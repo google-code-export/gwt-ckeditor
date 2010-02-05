@@ -123,27 +123,25 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor> {
 			replaced = true;
 			replaceTextArea(baseTextArea, this.config.getConfigObject());
 
-			if (config.getBreakLineChars() != null) {
+			/*if (config.getBreakLineChars() != null) {
 				setNativeBreakLineChars(config.getBreakLineChars());
 			}
 
 			if (config.getSelfClosingEnd() != null) {
 				setNativeSelfClosingEnd(config.getSelfClosingEnd());
-			}
+			}*/
 		}
 	}
 
 	private native void replaceTextArea(Object o, JavaScriptObject config) /*-{
 		this.@com.axeiya.gwtckeditor.client.CKEditor::editor = $wnd.CKEDITOR.replace(o,config);
 
-		//$wnd.CKEDITOR.htmlDataProcessor(this.@com.axeiya.gwtckeditor.client.CKEditor::editor);
-		//this.@com.axeiya.gwtckeditor.client.CKEditor::dataProcessor = this.@com.axeiya.gwtckeditor.client.CKEditor::editor.dataProcessor; 
-		if($wnd.CKEDITOR.htmlDataProcessor()){
-			this.@com.axeiya.gwtckeditor.client.CKEditor::dataProcessor = new $wnd.CKEDITOR.htmlDataProcessor(this.@com.axeiya.gwtckeditor.client.CKEditor::editor);
-			this.@com.axeiya.gwtckeditor.client.CKEditor::editor.dataProcessor = this.@com.axeiya.gwtckeditor.client.CKEditor::dataProcessor;
-		}else if(this.@com.axeiya.gwtckeditor.client.CKEditor::editor.dataProcessor){
-			this.@com.axeiya.gwtckeditor.client.CKEditor::dataProcessor = this.@com.axeiya.gwtckeditor.client.CKEditor::editor.dataProcessor;
-		}
+//		if($wnd.CKEDITOR.htmlDataProcessor()){
+//			this.@com.axeiya.gwtckeditor.client.CKEditor::dataProcessor = new $wnd.CKEDITOR.htmlDataProcessor(this.@com.axeiya.gwtckeditor.client.CKEditor::editor);
+//			this.@com.axeiya.gwtckeditor.client.CKEditor::editor.dataProcessor = this.@com.axeiya.gwtckeditor.client.CKEditor::dataProcessor;
+//		}else if(this.@com.axeiya.gwtckeditor.client.CKEditor::editor.dataProcessor){
+//			this.@com.axeiya.gwtckeditor.client.CKEditor::dataProcessor = this.@com.axeiya.gwtckeditor.client.CKEditor::editor.dataProcessor;
+//		}
 	}-*/;
 
 	private native String getNativeText() /*-{
@@ -156,19 +154,19 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor> {
 		e.setData(text,new Function());
 	}-*/;
 
-	private native void setNativeBreakLineChars(String breakLineChars) /*-{
-		var dataProcessor = this.@com.axeiya.gwtckeditor.client.CKEditor::dataProcessor;
-		if(dataProcessor){
-			dataProcessor.writer.lineBreakChars = breakLineChars;
-		}
-	}-*/;
+//	private native void setNativeBreakLineChars(String breakLineChars) /*-{
+//		var dataProcessor = this.@com.axeiya.gwtckeditor.client.CKEditor::dataProcessor;
+//		if(dataProcessor){
+//			dataProcessor.writer.lineBreakChars = breakLineChars;
+//		}
+//	}-*/;
 
-	private native void setNativeSelfClosingEnd(String selfClosingEnd) /*-{
-		var dataProcessor = this.@com.axeiya.gwtckeditor.client.CKEditor::dataProcessor;
-		if(dataProcessor){
-			dataProcessor.writer.selfClosingEnd = selfClosingEnd;
-		}
-	}-*/;
+//	private native void setNativeSelfClosingEnd(String selfClosingEnd) /*-{
+//		var dataProcessor = this.@com.axeiya.gwtckeditor.client.CKEditor::dataProcessor;
+//		if(dataProcessor){
+//			dataProcessor.writer.selfClosingEnd = selfClosingEnd;
+//		}
+//	}-*/;
 
 	/**
 	 * Returns the editor text
