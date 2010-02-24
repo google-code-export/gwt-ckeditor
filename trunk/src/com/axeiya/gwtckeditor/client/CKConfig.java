@@ -33,6 +33,7 @@ public class CKConfig {
 	private String breakLineChars;
 	private String enterMode;
 	private String selfClosingEnd;
+	private boolean resizeEnabled;
 	private int resizeMinWidth;
 	private int resizeMinHeight;
 	private int resizeMaxWidth;
@@ -187,6 +188,17 @@ public class CKConfig {
 	}
 	
 	/**
+	 * Define if the editor can be resized or not
+	 * @param resizeEnabled
+	 */
+	public void setResizeEnabled(boolean resizeEnabled)
+	{
+		this.resizeEnabled = resizeEnabled;
+		setNativeResizeEnabled(resizeEnabled);
+	}
+	
+	
+	/**
 	 * The minimum editor width, in pixels, when resizing it with the resize handle. 
 	 * @param resizeMinWidth
 	 */
@@ -319,6 +331,11 @@ public class CKConfig {
 	private native void setNativeLanguage(String language) /*-{
 		this.@com.axeiya.gwtckeditor.client.CKConfig::config.language = language;
 	}-*/;
+
+	private native void setNativeResizeEnabled(boolean resizeEnabled) /*-{
+		this.@com.axeiya.gwtckeditor.client.CKConfig::config.resize_enabled = resizeEnabled;
+	}-*/;
+
 	
 	private native void setNativeMaxWidth(int width) /*-{
 		this.@com.axeiya.gwtckeditor.client.CKConfig::config.resize_maxWidth = width;
@@ -354,7 +371,6 @@ public class CKConfig {
 	}-*/;
 	
 	
-
 	/**
 	 * Returns the config height
 	 * @return height
@@ -421,6 +437,10 @@ public class CKConfig {
 
 	public String getEnterMode() {
 		return enterMode;
+	}
+
+	public boolean isResizeEnabled() {
+		return resizeEnabled;
 	}
 	
 	
