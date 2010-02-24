@@ -43,6 +43,8 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor> {
 	private CKConfig config;
 	private boolean enabledInHostedMode = true;
 	private boolean replaced = false;
+	private boolean textWaitingForAttachment = false;
+	private String waitingText;
 
 	/**
 	 * Creates an editor with the CKConfig.basic configuration. By default, the
@@ -122,6 +124,12 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor> {
 		if ((GWT.isScript() || enabledInHostedMode) && !replaced) {
 			replaced = true;
 			replaceTextArea(baseTextArea, this.config.getConfigObject());
+			
+			if(textWaitingForAttachment)
+			{				
+				textWaitingForAttachment = false;
+				setText(waitingText);
+			}
 
 			/*if (config.getBreakLineChars() != null) {
 				setNativeBreakLineChars(config.getBreakLineChars());
@@ -198,7 +206,12 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor> {
 	 */
 	public void setText(String text) {
 		if (GWT.isScript() || enabledInHostedMode) {
-			setNativeText(text);
+			if(replaced)
+				setNativeText(text);
+			else{
+				waitingText = text;
+				textWaitingForAttachment = true;
+			}
 		} else {
 			textArea.setText(text);
 		}
@@ -233,6 +246,7 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor> {
 		String[] classes = classString.split(" ");
 		for (String c : classes) {
 			if (c.trim().equals("cke_button_save")) {
+				event.stopPropagation();
 				SaveEvent.fire(this, this, this.getText());
 			}
 		}
