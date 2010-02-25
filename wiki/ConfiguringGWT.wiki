@@ -13,7 +13,7 @@ https://jpxslg.bay.livefilestore.com/y1mH3womOAHt42LdR4spPkIvp6tYujzlKVZGW4Tg2hm
              
 
 
-*=> Add http://dl.google.com/eclipse/plugin/3.X* (X being the last number of your Eclipse version number).
+*=> Add http://dl.google.com/eclipse/plugin/3.X * _(X being the last digit of your Eclipse version number)_
 
 https://jpxslg.bay.livefilestore.com/y1mFUTYKBJZhZL5CgKuqTs5faycXOKgW114zRzqUqyq2zmjAFzb8Sy64qIvsgBilIsvcnZzHhQ8tKHUTNC7zatP_2e5is0hG2jXmtcisSLdyFkQzEim5n5AmfqRKyO7DYv3tcYmUvaQ2rZeftt_wAazDQ/EclipseEtape213.png
 
