@@ -1,4 +1,4 @@
-#summary How-to to configure GWT Eclipse
+#summary How-to to configure GWT for Eclipse
 
 = Introduction =
 
