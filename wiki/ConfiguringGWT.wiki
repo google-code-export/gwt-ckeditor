@@ -31,3 +31,5 @@ https://jpxslg.bay.livefilestore.com/y1moiQmRbKKK0uBWts898NQIpt9mTUE2DFVkf78CT57
 
 If you want to retrieve GoogleCode projects, you will need SVN configured in your Eclipse IDE.
 To do so, you should see this page : *[http://benjchristensen.com/2009/06/24/eclipse-galileo-3-5-and-subversion/ Configure Subversion]*
+
+Now to retrieve a project:
