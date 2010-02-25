@@ -32,4 +32,26 @@ https://jpxslg.bay.livefilestore.com/y1moiQmRbKKK0uBWts898NQIpt9mTUE2DFVkf78CT57
 If you want to retrieve GoogleCode projects, you will need SVN configured in your Eclipse IDE.
 To do so, you should see this page : *[http://benjchristensen.com/2009/06/24/eclipse-galileo-3-5-and-subversion/ Configure Subversion]*
 
-Now to retrieve a project:
+Now to retrieve a new project from SVN :
+
+*=> First, click on File/New Project*
+
+*=> You should now enter the word SVN and select * _Project from SVN_ *. Click on next. * 
+
+http://axeiya.com/fileadmin/template/main/images/SVN.png
+
+*=> On the next step, select * _Create a new repository location_ * and click on Next. *
+
+http://axeiya.com/fileadmin/template/main/images/SVN-2.png
+
+*=> In the URL field, enter the SVN repository address. Every googleCode project possess an svn repository at the adress : * _http://projectName.googlecode.com/svn_ * . *
+
+http://axeiya.com/fileadmin/template/main/images/SVN-3.png
+
+*=> In the following step, you should choose the project's version you would like to work with. It usually is the version in the trunk folder. Click on Finish. *
+
+http://axeiya.com/fileadmin/template/main/images/SVN-4.png
+
+*=> To finish the import, click on Finish. *
+
+http://axeiya.com/fileadmin/template/main/images/SVN-5.png
