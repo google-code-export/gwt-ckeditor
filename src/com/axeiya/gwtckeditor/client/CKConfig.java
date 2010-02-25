@@ -17,6 +17,7 @@ package com.axeiya.gwtckeditor.client;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.i18n.client.*;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Defines a configuration environment for a CKEditor
@@ -39,6 +40,7 @@ public class CKConfig {
 	private int resizeMaxWidth;
 	private int resizeMaxHeight;
 	private int baseFloatZIndex; 
+	private boolean useFormPanel = true	;
 	private String language;
 	private boolean entities;
 	private boolean entities_greek;
@@ -95,7 +97,6 @@ public class CKConfig {
 	}
 	
 	private native void initConfig() /*-{
-		
 	}-*/;
 	
 	private native String getLocaleProperty() /*-{
@@ -441,6 +442,14 @@ public class CKConfig {
 
 	public boolean isResizeEnabled() {
 		return resizeEnabled;
+	}
+
+	public void setUseFormPanel(boolean useFormPanel) {
+		this.useFormPanel = useFormPanel;
+	}
+
+	public boolean isUsingFormPanel() {
+		return useFormPanel;
 	}
 	
 	

@@ -17,16 +17,26 @@ package com.axeiya.gwtckeditor.client;
 import com.axeiya.gwtckeditor.client.events.HasSaveHandlers;
 import com.axeiya.gwtckeditor.client.events.SaveEvent;
 import com.axeiya.gwtckeditor.client.events.SaveHandler;
+import com.axeiya.gwtckeditor.client.widgets.CKTextArea;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
+import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 
 /**
  * This class provides a CKEdtior as a Widget
@@ -45,6 +55,7 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor> {
 	private boolean replaced = false;
 	private boolean textWaitingForAttachment = false;
 	private String waitingText;
+	
 
 	/**
 	 * Creates an editor with the CKConfig.basic configuration. By default, the
@@ -99,14 +110,17 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor> {
 	 */
 	private void initCKEditor() {
 		Element div = DOM.createDiv();
-		FormPanel form = new FormPanel();
+		
+		
 
 		if (GWT.isScript() || enabledInHostedMode) {
 			baseTextArea = DOM.createTextArea();
 			name = HTMLPanel.createUniqueId();
 			div.appendChild(baseTextArea);
 			DOM.setElementAttribute(baseTextArea, "name", name);
-			this.sinkEvents(Event.ONCLICK);
+			this.sinkEvents(Event.ONCLICK| Event.KEYEVENTS);
+			
+	
 		} else {
 			textArea = new TextArea();
 			if (config.getHeight() != null)
@@ -115,8 +129,23 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor> {
 				textArea.setWidth(config.getWidth());
 			div.appendChild(textArea.getElement());
 		}
-		form.getElement().appendChild(div);
-		initWidget(form);
+		if(config.isUsingFormPanel())
+		{
+			FormPanel form = new FormPanel();
+			Button submit = new Button();
+			submit.getElement().setAttribute("name", "submit");
+			submit.getElement().setAttribute("style", "visibility:hidden; display:none;");
+			
+			form.getElement().appendChild(div);
+			form.add(submit);
+			initWidget(form);
+		}
+		else
+		{
+			SimplePanel simplePanel = new SimplePanel();
+			simplePanel.getElement().appendChild(div);
+			initWidget(simplePanel);
+		}
 	}
 
 	@Override
@@ -242,14 +271,18 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor> {
 	@Override
 	public void onBrowserEvent(Event event) {
 		super.onBrowserEvent(event);
+		System.out.println("Declenche");
 		String classString = getParentClassname(event.getEventTarget());
 		String[] classes = classString.split(" ");
 		for (String c : classes) {
 			if (c.trim().equals("cke_button_save")) {
 				event.stopPropagation();
 				SaveEvent.fire(this, this, this.getText());
+				return;
 			}
 		}
+	
+		
 	}
 
 	@Override
