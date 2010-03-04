@@ -17,7 +17,6 @@ package com.axeiya.gwtckeditor.client;
 import com.axeiya.gwtckeditor.client.events.HasSaveHandlers;
 import com.axeiya.gwtckeditor.client.events.SaveEvent;
 import com.axeiya.gwtckeditor.client.events.SaveHandler;
-import com.axeiya.gwtckeditor.client.widgets.CKTextArea;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -30,20 +29,16 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasAlignment;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
-import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
-import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 
 /**
  * This class provides a CKEdtior as a Widget
  * 
  * @author Damien Picard <damien.picard@axeiya.com>
  */
-public class CKEditor extends Composite implements HasSaveHandlers<CKEditor> {
+public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, ClickHandler, HasAlignment {
 
 	private String name;
 	private JavaScriptObject editor;
@@ -55,6 +50,9 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor> {
 	private boolean replaced = false;
 	private boolean textWaitingForAttachment = false;
 	private String waitingText;
+	
+	private HorizontalAlignmentConstant hAlign =null;
+	private VerticalAlignmentConstant vAlign = null;
 	
 
 	/**
@@ -133,6 +131,7 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor> {
 		{
 			FormPanel form = new FormPanel();
 			Button submit = new Button();
+			submit.addClickHandler(this);
 			submit.getElement().setAttribute("name", "submit");
 			submit.getElement().setAttribute("style", "visibility:hidden; display:none;");
 			
@@ -158,6 +157,16 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor> {
 			{				
 				textWaitingForAttachment = false;
 				setText(waitingText);
+			}
+			
+			if(hAlign != null)
+			{
+				setHorizontalAlignment(hAlign);
+			}
+			
+			if(vAlign != null)
+			{
+				setVerticalAlignment(vAlign);
 			}
 
 			/*if (config.getBreakLineChars() != null) {
@@ -271,22 +280,59 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor> {
 	@Override
 	public void onBrowserEvent(Event event) {
 		super.onBrowserEvent(event);
-		System.out.println("Declenche");
-		String classString = getParentClassname(event.getEventTarget());
-		String[] classes = classString.split(" ");
-		for (String c : classes) {
-			if (c.trim().equals("cke_button_save")) {
-				event.stopPropagation();
-				SaveEvent.fire(this, this, this.getText());
-				return;
-			}
-		}
+//		System.out.println("Declenche");
+//		String classString = getParentClassname(event.getEventTarget());
+//		String[] classes = classString.split(" ");
+//		for (String c : classes) {
+//			if (c.trim().equals("cke_button_save")) {
+//				event.stopPropagation();
+//				SaveEvent.fire(this, this, this.getText());
+//				return;
+//			}
+//		}
+//	
+		
+	}
 	
+	
+
+	@Override
+	public void onClick(ClickEvent event) {
+		if(event.getRelativeElement().getAttribute("name").equals("submit"))
+		{
+			event.stopPropagation();
+			SaveEvent.fire(this, this, this.getText());
+		}
 		
 	}
 
 	@Override
 	public HandlerRegistration addSaveHandler(SaveHandler<CKEditor> handler) {
 		return addHandler(handler, SaveEvent.getType());
+	}
+
+	@Override
+	public HorizontalAlignmentConstant getHorizontalAlignment() {
+		return hAlign;
+	}
+
+	@Override
+	public void setHorizontalAlignment(HorizontalAlignmentConstant align) {
+		this.hAlign = align;
+		if(replaced)
+			this.getElement().getParentElement().setAttribute("align", align.getTextAlignString());
+	}
+
+	@Override
+	public VerticalAlignmentConstant getVerticalAlignment() {
+		return vAlign;
+	}
+
+	@Override
+	public void setVerticalAlignment(VerticalAlignmentConstant align) {
+		this.vAlign = align;
+		if(replaced)
+			this.getElement().getParentElement().setAttribute("style", "vertical-align:" + align.getVerticalAlignString());
+		
 	}
 }
