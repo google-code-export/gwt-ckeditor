@@ -39,7 +39,8 @@ public class CKConfig {
 	private int resizeMinHeight;
 	private int resizeMaxWidth;
 	private int resizeMaxHeight;
-	private int baseFloatZIndex; 
+	private int baseFloatZIndex;
+	private int tabIndex;
 	private boolean useFormPanel = true	;
 	private String language;
 	private boolean entities;
@@ -272,6 +273,15 @@ public class CKConfig {
 		
 	}
 	
+	/**
+	 * The tabIndex for tinyMCE instance
+	 * @param tabIndex
+	 */
+	public void setTabIndex(int tabIndex) {
+		this.tabIndex = tabIndex;
+		setNativeTabIndex(tabIndex);
+	}
+	
 	
 	/**
 	 * The way a tag self Close himself (e.g : "/>" or " />"
@@ -371,6 +381,10 @@ public class CKConfig {
 		this.@com.axeiya.gwtckeditor.client.CKConfig::config.toolbar = 'temp';
 	}-*/;
 	
+	private native void setNativeTabIndex(int tabIndex) /*-{
+	this.@com.axeiya.gwtckeditor.client.CKConfig::config.tabIndex = tabIndex;
+}-*/;
+	
 	
 	/**
 	 * Returns the config height
@@ -451,6 +465,12 @@ public class CKConfig {
 	public boolean isUsingFormPanel() {
 		return useFormPanel;
 	}
+
+	public int getTabIndex() {
+		return tabIndex;
+	}
+
+	
 	
 	
 	
