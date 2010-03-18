@@ -156,7 +156,7 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Cl
 			if(textWaitingForAttachment)
 			{				
 				textWaitingForAttachment = false;
-				setText(waitingText);
+				setHTML(waitingText);
 			}
 			
 			if(hAlign != null)
@@ -190,16 +190,34 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Cl
 //		}
 	}-*/;
 
+	@Deprecated
+	/**
+	 * Use getNativeHTML() instead
+	 */
 	private native String getNativeText() /*-{
 		var e = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
 		return e.getData();
 	}-*/;
+	
+	private native String getNativeHTML() /*-{
+	var e = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
+	return e.getData();
+}-*/;
 
+	@Deprecated
+	/**
+	 * Use setNativeHTML(String html) instead
+	 */
 	private native void setNativeText(String text) /*-{
 		var e = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
 		e.setData(text,new Function());
 	}-*/;
 
+	private native void setNativeHTML(String html) /*-{
+	var e = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
+	e.setData(html,new Function());
+}-*/;
+	
 //	private native void setNativeBreakLineChars(String breakLineChars) /*-{
 //		var dataProcessor = this.@com.axeiya.gwtckeditor.client.CKEditor::dataProcessor;
 //		if(dataProcessor){
@@ -214,11 +232,14 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Cl
 //		}
 //	}-*/;
 
+	
 	/**
+	 * Use getHTML() instead.
 	 * Returns the editor text
 	 * 
 	 * @return the editor text
 	 */
+	@Deprecated
 	public String getText() {
 		if (GWT.isScript() || enabledInHostedMode) {
 			return getNativeText();
@@ -226,22 +247,39 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Cl
 			return textArea.getText();
 		}
 	}
+	
+	/**
+	 * Returns the editor text
+	 * 
+	 * @return the editor text
+	 */
+	public String getHTML() {
+		if (GWT.isScript() || enabledInHostedMode) {
+			return getNativeHTML();
+		} else {
+			return textArea.getText();
+		}
+	}
+
 
 	/**
-	 * {@link #getText()}
+	 * {@link #getHTML()}
 	 * 
 	 * @return
 	 */
 	public String getData() {
-		return getText();
+		return getHTML();
 	}
 
+	
 	/**
+	 * Use setHtml(String html) instead.
 	 * Set the editor text
 	 * 
 	 * @param text
 	 *            The text to set
 	 */
+	@Deprecated
 	public void setText(String text) {
 		if (GWT.isScript() || enabledInHostedMode) {
 			if(replaced)
@@ -254,14 +292,33 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Cl
 			textArea.setText(text);
 		}
 	}
+	
+	/**
+	 * Set the editor's html
+	 * 
+	 * @param html
+	 *            The html string to set
+	 */
+	public void setHTML(String html) {
+		if (GWT.isScript() || enabledInHostedMode) {
+			if(replaced)
+				setNativeHTML(html);
+			else{
+				waitingText = html;
+				textWaitingForAttachment = true;
+			}
+		} else {
+			textArea.setText(html);
+		}
+	}
 
 	/**
-	 * {@link #setText(String)}
+	 * {@link #setHTML(String)}
 	 * 
 	 * @param data
 	 */
 	public void setData(String data) {
-		setText(data);
+		setHTML(data);
 	}
 
 	/**
@@ -301,7 +358,7 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Cl
 		if(event.getRelativeElement().getAttribute("name").equals("submit"))
 		{
 			event.stopPropagation();
-			SaveEvent.fire(this, this, this.getText());
+			SaveEvent.fire(this, this, this.getHTML());
 		}
 		
 	}
