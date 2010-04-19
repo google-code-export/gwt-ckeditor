@@ -19,6 +19,8 @@ import com.axeiya.gwtckeditor.client.events.SaveEvent;
 import com.axeiya.gwtckeditor.client.events.SaveHandler;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.Node;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -28,8 +30,12 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasAlignment;
+import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.RichTextArea;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextArea;
 
@@ -37,22 +43,27 @@ import com.google.gwt.user.client.ui.TextArea;
  * This class provides a CKEdtior as a Widget
  * 
  * @author Damien Picard <damien.picard@axeiya.com>
+ * @author Emmanuel COQUELIN <emmanuel.coquelin@axeiya.com>
  */
 public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, ClickHandler, HasAlignment {
 
-	private String name;
-	private JavaScriptObject editor;
-	private TextArea textArea;
-	private Element baseTextArea;
-	private JavaScriptObject dataProcessor;
-	private CKConfig config;
-	private boolean enabledInHostedMode = true;
-	private boolean replaced = false;
-	private boolean textWaitingForAttachment = false;
-	private String waitingText;
+	protected String name;
+	protected JavaScriptObject editor;
+	protected TextArea textArea;
+	protected Element baseTextArea;
+	protected JavaScriptObject dataProcessor;
+	protected CKConfig config;
+	protected boolean enabledInHostedMode = true;
+	protected boolean replaced = false;
+	protected boolean textWaitingForAttachment = false;
+	protected String waitingText;
+	protected boolean waitingForDisabling = false;
+	protected boolean disabled = false;
+	protected Element div;
+	protected Node ckEditorNode;
 	
-	private HorizontalAlignmentConstant hAlign =null;
-	private VerticalAlignmentConstant vAlign = null;
+	protected HorizontalAlignmentConstant hAlign =null;
+	protected VerticalAlignmentConstant vAlign = null;
 	
 
 	/**
@@ -107,7 +118,7 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Cl
 	 * Initialize the editor
 	 */
 	private void initCKEditor() {
-		Element div = DOM.createDiv();
+		div = DOM.createDiv();
 		
 		
 
@@ -149,24 +160,30 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Cl
 
 	@Override
 	protected void onLoad() {
-		if ((GWT.isScript() || enabledInHostedMode) && !replaced) {
+		initInstance();
+			}
+	
+	protected void initInstance(){
+		if ((GWT.isScript() || enabledInHostedMode) && !replaced && !disabled) {
 			replaced = true;
 			replaceTextArea(baseTextArea, this.config.getConfigObject());
 			
-			if(textWaitingForAttachment)
-			{				
+			if(textWaitingForAttachment){				
 				textWaitingForAttachment = false;
 				setHTML(waitingText);
 			}
 			
-			if(hAlign != null)
-			{
+			if(hAlign != null){
 				setHorizontalAlignment(hAlign);
 			}
 			
-			if(vAlign != null)
-			{
+			if(vAlign != null){
 				setVerticalAlignment(vAlign);
+			}
+			
+			if(waitingForDisabling){
+				this.waitingForDisabling = false;
+				setDisabled(this.disabled);
 			}
 
 			/*if (config.getBreakLineChars() != null) {
@@ -177,6 +194,7 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Cl
 				setNativeSelfClosingEnd(config.getSelfClosingEnd());
 			}*/
 		}
+
 	}
 
 	private native void replaceTextArea(Object o, JavaScriptObject config) /*-{
@@ -231,8 +249,26 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Cl
 //			dataProcessor.writer.selfClosingEnd = selfClosingEnd;
 //		}
 //	}-*/;
-
 	
+	/**
+	 * If you want to set the width, you must do so with the configuration object before instanciating
+	 */
+	@Deprecated
+	@Override
+	public void setWidth(String width) {
+		// TODO Auto-generated method stub
+		super.setWidth(width);
+	}
+	
+	/**
+	 * If you want to set the height, you must do so with the configuration object before instanciating
+	 */
+	@Deprecated
+	@Override
+	public void setHeight(String height) {
+		// TODO Auto-generated method stub
+		super.setHeight(height);
+	}
 	/**
 	 * Use getHTML() instead.
 	 * Returns the editor text
@@ -249,13 +285,98 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Cl
 	}
 	
 	/**
+	 * Use to disable CKEditor's instance
+	 * @param disabled
+	 */
+	public void setDisabled(boolean disabled){
+		this.disabled = disabled ;
+		
+		if (GWT.isScript() || enabledInHostedMode) {
+			if(disabled)
+			{
+				ScrollPanel scroll = new ScrollPanel();
+				HTML html = new HTML();
+				scroll.setWidget(html);
+				
+				if(config.getWidth() != null)
+					scroll.setWidth(config.getWidth());
+				if(config.getHeight() != null)
+					scroll.setHeight(config.getHeight());
+				
+				String htmlString = new String();
+				
+				if(replaced){
+					htmlString = getHTML();
+				}
+				else{
+					htmlString = waitingText;
+				}
+				
+				DivElement divElement = DivElement.as(this.getElement().getFirstChildElement());
+				Node node = divElement.getFirstChild();
+				while(node != null) {
+					if(node.getNodeType() == Node.ELEMENT_NODE){
+						com.google.gwt.dom.client.Element element = com.google.gwt.dom.client.Element.as(node);
+						if(element.getTagName().equalsIgnoreCase("textarea")){
+							destroyInstance();
+							replaced = false;
+							divElement.removeChild(node);
+							ckEditorNode = node;
+						}
+					}
+					node = node.getNextSibling();
+				}
+				html.setHTML(htmlString);
+				div.appendChild(scroll.getElement());
+			
+			}else{
+				if(ckEditorNode != null){
+					DivElement divElement = DivElement.as(this.getElement().getFirstChildElement());
+					Node node = divElement.getFirstChild();
+					while(node != null) {
+						if(node.getNodeType() == Node.ELEMENT_NODE){
+							com.google.gwt.dom.client.Element element = com.google.gwt.dom.client.Element.as(node);
+							if(element.getTagName().equalsIgnoreCase("div")){
+								divElement.removeChild(node);
+								
+							}
+						}
+						node = node.getNextSibling();
+					}
+					div.appendChild(baseTextArea);
+					initInstance();
+
+				}
+			}
+		}
+		else {
+				textArea.setEnabled(disabled);
+			}
+		
+		
+	}
+	
+	private native void destroyInstance()/*-{
+		var editor = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
+		if(editor){
+			editor.destroy();
+		}
+		
+	}-*/;
+
+	
+	/**
 	 * Returns the editor text
 	 * 
 	 * @return the editor text
 	 */
 	public String getHTML() {
 		if (GWT.isScript() || enabledInHostedMode) {
-			return getNativeHTML();
+			if(replaced)
+				return getNativeHTML();
+			else{
+				return waitingText;
+			}
 		} else {
 			return textArea.getText();
 		}
@@ -392,4 +513,10 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Cl
 			this.getElement().getParentElement().setAttribute("style", "vertical-align:" + align.getVerticalAlignString());
 		
 	}
+
+	public boolean isDisabled() {
+		return disabled;
+	}
+	
+	
 }
