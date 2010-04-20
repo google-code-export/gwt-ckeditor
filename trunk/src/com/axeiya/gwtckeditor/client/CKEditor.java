@@ -61,6 +61,7 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Cl
 	protected boolean disabled = false;
 	protected Element div;
 	protected Node ckEditorNode;
+	protected HTML disabledHTML;
 	
 	protected HorizontalAlignmentConstant hAlign =null;
 	protected VerticalAlignmentConstant vAlign = null;
@@ -300,9 +301,9 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Cl
 				if(disabled)
 				{
 					ScrollPanel scroll = new ScrollPanel();
-					HTML html = new HTML();
-					html.setStyleName("GWTCKEditor-Disabled");
-					scroll.setWidget(html);
+					disabledHTML = new HTML();
+					disabledHTML.setStyleName("GWTCKEditor-Disabled");
+					scroll.setWidget(disabledHTML);
 					
 					if(config.getWidth() != null)
 						scroll.setWidth(config.getWidth());
@@ -333,7 +334,7 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Cl
 						}
 						node = node.getNextSibling();
 					}
-					html.setHTML(htmlString);
+					disabledHTML.setHTML(htmlString);
 					div.appendChild(scroll.getElement());
 				
 				}else{
