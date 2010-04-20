@@ -163,6 +163,9 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Cl
 		initInstance();
 			}
 	
+	/**
+	 * Replace the text Area by a CKEditor Instance
+	 */
 	protected void initInstance(){
 		if ((GWT.isScript() || enabledInHostedMode) && !replaced && !disabled) {
 			replaced = true;
@@ -289,70 +292,74 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Cl
 	 * @param disabled
 	 */
 	public void setDisabled(boolean disabled){
-		this.disabled = disabled ;
 		
-		if (GWT.isScript() || enabledInHostedMode) {
-			if(disabled)
-			{
-				ScrollPanel scroll = new ScrollPanel();
-				HTML html = new HTML();
-				scroll.setWidget(html);
-				
-				if(config.getWidth() != null)
-					scroll.setWidth(config.getWidth());
-				if(config.getHeight() != null)
-					scroll.setHeight(config.getHeight());
-				
-				String htmlString = new String();
-				
-				if(replaced){
-					htmlString = getHTML();
-				}
-				else{
-					htmlString = waitingText;
-				}
-				
-				DivElement divElement = DivElement.as(this.getElement().getFirstChildElement());
-				Node node = divElement.getFirstChild();
-				while(node != null) {
-					if(node.getNodeType() == Node.ELEMENT_NODE){
-						com.google.gwt.dom.client.Element element = com.google.gwt.dom.client.Element.as(node);
-						if(element.getTagName().equalsIgnoreCase("textarea")){
-							destroyInstance();
-							replaced = false;
-							divElement.removeChild(node);
-							ckEditorNode = node;
-						}
+		if(this.disabled != disabled){
+			this.disabled = disabled;
+	
+			if (GWT.isScript() || enabledInHostedMode) {
+				if(disabled)
+				{
+					ScrollPanel scroll = new ScrollPanel();
+					HTML html = new HTML();
+					html.setStyleName("GWTCKEditor-Disabled");
+					scroll.setWidget(html);
+					
+					if(config.getWidth() != null)
+						scroll.setWidth(config.getWidth());
+					
+					if(config.getHeight() != null)
+						scroll.setHeight(config.getHeight());
+					
+					String htmlString = new String();
+					
+					if(replaced){
+						htmlString = getHTML();
 					}
-					node = node.getNextSibling();
-				}
-				html.setHTML(htmlString);
-				div.appendChild(scroll.getElement());
-			
-			}else{
-				if(ckEditorNode != null){
+					else{
+						htmlString = waitingText;
+					}
+					
 					DivElement divElement = DivElement.as(this.getElement().getFirstChildElement());
 					Node node = divElement.getFirstChild();
 					while(node != null) {
 						if(node.getNodeType() == Node.ELEMENT_NODE){
 							com.google.gwt.dom.client.Element element = com.google.gwt.dom.client.Element.as(node);
-							if(element.getTagName().equalsIgnoreCase("div")){
+							if(element.getTagName().equalsIgnoreCase("textarea")){
+								destroyInstance();
+								replaced = false;
 								divElement.removeChild(node);
-								
+								ckEditorNode = node;
 							}
 						}
 						node = node.getNextSibling();
 					}
-					div.appendChild(baseTextArea);
-					initInstance();
-
+					html.setHTML(htmlString);
+					div.appendChild(scroll.getElement());
+				
+				}else{
+					if(ckEditorNode != null){
+						DivElement divElement = DivElement.as(this.getElement().getFirstChildElement());
+						Node node = divElement.getFirstChild();
+						while(node != null) {
+							if(node.getNodeType() == Node.ELEMENT_NODE){
+								com.google.gwt.dom.client.Element element = com.google.gwt.dom.client.Element.as(node);
+								if(element.getTagName().equalsIgnoreCase("div")){
+									divElement.removeChild(node);
+									
+								}
+							}
+							node = node.getNextSibling();
+						}
+						div.appendChild(baseTextArea);
+						initInstance();
+	
+					}
 				}
 			}
-		}
-		else {
-				textArea.setEnabled(disabled);
+			else {
+					textArea.setEnabled(disabled);
 			}
-		
+		}
 		
 	}
 	
