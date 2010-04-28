@@ -145,7 +145,8 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Cl
 			Button submit = new Button();
 			submit.addClickHandler(this);
 			submit.getElement().setAttribute("name", "submit");
-			submit.getElement().setAttribute("style", "visibility:hidden; display:none;");
+			submit.setVisible(false);
+			//.getElement().setAttribute("style", "visibility:hidden");
 			
 			form.getElement().appendChild(div);
 			form.add(submit);

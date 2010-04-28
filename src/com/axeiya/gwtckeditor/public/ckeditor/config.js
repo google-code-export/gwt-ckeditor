@@ -12,7 +12,7 @@ CKEDITOR.editorConfig = function( config )
 		config.keystrokes =
 		[
 	
-		[ CKEDITOR.CTRL + 83 /*S*/, 'save' ],
+		[ CKEDITOR.CTRL + 83 /*S*/, 'save' ]
 
 		];
 };
