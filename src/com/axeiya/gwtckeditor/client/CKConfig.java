@@ -456,6 +456,7 @@ public class CKConfig {
 		return entities;
 	}
 
+	
 	public boolean isEntities_greek() {
 		return entities_greek;
 	}

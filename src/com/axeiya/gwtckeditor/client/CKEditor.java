@@ -179,6 +179,9 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Cl
 				setHTML(waitingText);
 			}
 			
+			if(this.config.isFocusOnStartup()){
+				setNativeFocus(true);
+			}
 		
 			if(hAlign != null){
 				setHorizontalAlignment(hAlign);
