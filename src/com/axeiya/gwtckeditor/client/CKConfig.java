@@ -46,6 +46,7 @@ public class CKConfig {
 	private boolean entities;
 	private boolean entities_greek;
 	private boolean entities_latin;
+	private boolean focusOnStartup;
 	
 	JavaScriptObject config = JavaScriptObject.createObject();
 	
@@ -134,6 +135,7 @@ public class CKConfig {
 	public void setToolbarName(String name){
 		this.toolbarName = name;
 	}
+
 	
 	/**
 	 * Sets the toolbar from an options list ; this will unset any PRESET_TOOLBAR set before
@@ -151,6 +153,16 @@ public class CKConfig {
 	public void setUiColor(String uiColor){
 		this.uiColor = uiColor;
 		setNativeUiColor(uiColor);
+	}
+	
+	
+	/**
+	 * Define if the ckEditor instance should have the focus on startup or not
+	 * @param name The toolbar name
+	 */
+	public void setFocusOnStartup(boolean focus){
+		this.focusOnStartup = focus;
+		setNativeFocusOnStartup(focus);
 	}
 	
 	/**
@@ -385,6 +397,10 @@ public class CKConfig {
 	this.@com.axeiya.gwtckeditor.client.CKConfig::config.tabIndex = tabIndex;
 }-*/;
 	
+	private native void setNativeFocusOnStartup(boolean focus) /*-{
+	this.@com.axeiya.gwtckeditor.client.CKConfig::config.startupFocus = focus;
+}-*/;
+	
 	
 	/**
 	 * Returns the config height
@@ -412,6 +428,12 @@ public class CKConfig {
 
 	public int getResizeMinHeight() {
 		return resizeMinHeight;
+	}
+	
+	
+
+	public boolean isFocusOnStartup() {
+		return focusOnStartup;
 	}
 
 	public int getResizeMaxWidth() {

@@ -27,6 +27,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FormPanel;
@@ -178,6 +179,7 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Cl
 				setHTML(waitingText);
 			}
 			
+		
 			if(hAlign != null){
 				setHorizontalAlignment(hAlign);
 			}
@@ -185,6 +187,9 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Cl
 			if(vAlign != null){
 				setVerticalAlignment(vAlign);
 			}
+			
+			
+			
 			
 			if(waitingForDisabling){
 				this.waitingForDisabling = false;
@@ -226,6 +231,11 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Cl
 	var e = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
 	return e.getData();
 }-*/;
+	
+	private native void setNativeFocus(boolean focus)/*-{
+		var e = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
+		e.focus();
+	}-*/;
 
 	@Deprecated
 	/**
@@ -286,6 +296,22 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Cl
 			return getNativeText();
 		} else {
 			return textArea.getText();
+		}
+	}
+	
+	
+	/**
+	 * Set the focus natively if ckEditor is attached, alerts you if it's not the case.
+	 * @param focus
+	 */
+	public void setFocus(boolean focus){
+		if(replaced == true){
+			setNativeFocus(focus);
+		}
+		else{
+			Window.alert("You can't set the focus on startup with the method setFocus(boolean focus).\n" 
+					+ "If you want to add focus to your instance on startup, use the config object\n" +
+							"with the method setFocusOnStartup(boolean focus) instead.");
 		}
 	}
 	
