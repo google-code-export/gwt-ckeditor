@@ -161,8 +161,9 @@ public class CKConfig {
 	 * @param name The toolbar name
 	 */
 	public void setFocusOnStartup(boolean focus){
-		this.focusOnStartup = focus;
 		setNativeFocusOnStartup(focus);
+		this.focusOnStartup = focus;
+		
 	}
 	
 	/**
@@ -399,6 +400,7 @@ public class CKConfig {
 	
 	private native void setNativeFocusOnStartup(boolean focus) /*-{
 	this.@com.axeiya.gwtckeditor.client.CKConfig::config.startupFocus = focus;
+	
 }-*/;
 	
 	

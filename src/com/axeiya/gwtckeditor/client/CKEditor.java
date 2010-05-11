@@ -63,6 +63,7 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Cl
 	protected Element div;
 	protected Node ckEditorNode;
 	protected HTML disabledHTML;
+	protected boolean focused = false;
 	
 	protected HorizontalAlignmentConstant hAlign =null;
 	protected VerticalAlignmentConstant vAlign = null;
@@ -179,9 +180,7 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Cl
 				setHTML(waitingText);
 			}
 			
-			if(this.config.isFocusOnStartup()){
-				setNativeFocus(true);
-			}
+
 		
 			if(hAlign != null){
 				setHorizontalAlignment(hAlign);
@@ -191,13 +190,18 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Cl
 				setVerticalAlignment(vAlign);
 			}
 			
-			
+			if(this.config.isFocusOnStartup()){
+				this.focused = true;
+				setAddFocusOnLoad(focused);
+			}
 			
 			
 			if(waitingForDisabling){
 				this.waitingForDisabling = false;
 				setDisabled(this.disabled);
 			}
+			
+
 
 			/*if (config.getBreakLineChars() != null) {
 				setNativeBreakLineChars(config.getBreakLineChars());
@@ -209,10 +213,35 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Cl
 		}
 
 	}
+	
+	private native void setAddFocusOnLoad(boolean focus)/*-{
+		var e = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
+		
+		e.on('dataReady', function(ev){
+	
+			if(focus){
+	
+				e.focus();
+				var lastc = e.document.getBody().getLast();		
+				e.getSelection().selectElement(lastc);
+				var range = e.getSelection().getRanges()[0];
+				range.collapse(false);
+				range.setStart(lastc,  range.startOffset);
+				try{
+					range.setEnd(lastc , range.endOffset);
+				}catch(err){
+				}
+				range.select();
+			}
+			
+		});
+	}-*/;
 
 	private native void replaceTextArea(Object o, JavaScriptObject config) /*-{
-		this.@com.axeiya.gwtckeditor.client.CKEditor::editor = $wnd.CKEDITOR.replace(o,config);
+		 this.@com.axeiya.gwtckeditor.client.CKEditor::editor = $wnd.CKEDITOR.replace(o,config);
 
+		
+		
 //		if($wnd.CKEDITOR.htmlDataProcessor()){
 //			this.@com.axeiya.gwtckeditor.client.CKEditor::dataProcessor = new $wnd.CKEDITOR.htmlDataProcessor(this.@com.axeiya.gwtckeditor.client.CKEditor::editor);
 //			this.@com.axeiya.gwtckeditor.client.CKEditor::editor.dataProcessor = this.@com.axeiya.gwtckeditor.client.CKEditor::dataProcessor;
@@ -236,8 +265,26 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Cl
 }-*/;
 	
 	private native void setNativeFocus(boolean focus)/*-{
-		var e = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
-		e.focus();
+		
+		if(focus){
+			var e = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
+			if(e){
+				e.focus();
+				
+				var lastc = e.document.getBody().getLast();		
+				e.getSelection().selectElement(lastc);
+				var range = e.getSelection().getRanges()[0];
+				range.collapse(false);
+				range.setStart(lastc,  range.startOffset);
+				try{
+					range.setEnd(lastc , range.endOffset);
+				}catch(err){
+				}
+				range.select();
+			}
+		}
+
+		
 	}-*/;
 
 	@Deprecated
@@ -308,13 +355,15 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Cl
 	 * @param focus
 	 */
 	public void setFocus(boolean focus){
-		if(replaced == true){
-			setNativeFocus(focus);
-		}
-		else{
-			Window.alert("You can't set the focus on startup with the method setFocus(boolean focus).\n" 
-					+ "If you want to add focus to your instance on startup, use the config object\n" +
-							"with the method setFocusOnStartup(boolean focus) instead.");
+		if (GWT.isScript() || enabledInHostedMode) {
+			if(replaced == true){
+				setNativeFocus(focus);
+			}
+			else{
+				Window.alert("You can't set the focus on startup with the method setFocus(boolean focus).\n" 
+						+ "If you want to add focus to your instance on startup, use the config object\n" +
+								"with the method setFocusOnStartup(boolean focus) instead.");
+			}
 		}
 	}
 	
@@ -401,6 +450,8 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Cl
 		}
 		
 	}-*/;
+
+	
 
 	
 	/**
