@@ -34,6 +34,8 @@ import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasAlignment;
+import com.google.gwt.user.client.ui.HasHTML;
+import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RichTextArea;
 import com.google.gwt.user.client.ui.ScrollPanel;
@@ -46,7 +48,7 @@ import com.google.gwt.user.client.ui.TextArea;
  * @author Damien Picard <damien.picard@axeiya.com>
  * @author Emmanuel COQUELIN <emmanuel.coquelin@axeiya.com>
  */
-public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, ClickHandler, HasAlignment {
+public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, ClickHandler, HasAlignment, HasHTML, HasText {
 
 	protected String name;
 	protected JavaScriptObject editor;
@@ -565,8 +567,7 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Cl
 
 	@Override
 	public void onClick(ClickEvent event) {
-		if(event.getRelativeElement().getAttribute("name").equals("submit"))
-		{
+		if(event.getRelativeElement().getAttribute("name").equals("submit")){
 			event.stopPropagation();
 			SaveEvent.fire(this, this, this.getHTML());
 		}

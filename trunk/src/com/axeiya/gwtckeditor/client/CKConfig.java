@@ -494,10 +494,5 @@ public class CKConfig {
 	public int getTabIndex() {
 		return tabIndex;
 	}
-
-	
-	
-	
-	
 	
 }
