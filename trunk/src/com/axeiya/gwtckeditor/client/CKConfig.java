@@ -47,6 +47,8 @@ public class CKConfig {
 	private boolean entities_greek;
 	private boolean entities_latin;
 	private boolean focusOnStartup;
+	private String fileBrowserBrowseUrl;
+	
 	
 	JavaScriptObject config = JavaScriptObject.createObject();
 	
@@ -116,6 +118,18 @@ public class CKConfig {
 		return "en";
 	}-*/;
 	
+	
+	
+	/**
+	 * Set the browser's Url to Open when selecting images
+	 * @param fileBrowserBrowseUrl 
+	 * 		the Url to use
+	 */
+	public void setFileBrowserBrowseUrl(String fileBrowserBrowseUrl) {
+		this.fileBrowserBrowseUrl = fileBrowserBrowseUrl;
+		setNativeFileBrowserBrowserUrl(fileBrowserBrowseUrl);
+	}
+
 	/**
 	 * Sets the toolbar to a pre-defined one ; this will unset any Toolbar set before
 	 * @param toolbar The preset toolbar to use
@@ -328,6 +342,10 @@ public class CKConfig {
 		return config;
 	}
 	
+	private native void setNativeFileBrowserBrowserUrl(String browseUrl)/*-{
+		this.@com.axeiya.gwtckeditor.client.CKConfig::config.filebrowserBrowseUrl = browseUrl;
+	}-*/;
+	
 	private native void setNativeEnterMode(String enterMode)/*-{
 		this.@com.axeiya.gwtckeditor.client.CKConfig::config.enterMode = enterMode;
 	}-*/;
@@ -494,5 +512,14 @@ public class CKConfig {
 	public int getTabIndex() {
 		return tabIndex;
 	}
+
+	public String getFileBrowserBrowseUrl() {
+		return fileBrowserBrowseUrl;
+	}
+
+	
+	
+	
+	
 	
 }
