@@ -48,6 +48,7 @@ public class CKConfig {
 	private boolean entities_latin;
 	private boolean focusOnStartup;
 	private String fileBrowserBrowseUrl;
+	private String fileBrowserImageBrowseUrl;
 	
 	
 	JavaScriptObject config = JavaScriptObject.createObject();
@@ -97,11 +98,11 @@ public class CKConfig {
 		if(l.getLocaleName().equals("default")){
 			GWT.log("LocaleProperty : "+getLocaleProperty(), null);
 			this.setLanguage(getLocaleProperty());
-		}
+		}else
+			this.setLanguage(LocaleInfo.getCurrentLocale().getLocaleName().split("_")[0]);
 	}
 	
-	private native void initConfig() /*-{
-	}-*/;
+	private native void initConfig() /*-{}-*/;
 	
 	private native String getLocaleProperty() /*-{
 		var metaArray = $doc.getElementsByTagName("meta");
@@ -121,13 +122,23 @@ public class CKConfig {
 	
 	
 	/**
-	 * Set the browser's Url to Open when selecting images
+	 * Set the browser's Url to Open when selecting images, link and flash
 	 * @param fileBrowserBrowseUrl 
 	 * 		the Url to use
 	 */
 	public void setFileBrowserBrowseUrl(String fileBrowserBrowseUrl) {
 		this.fileBrowserBrowseUrl = fileBrowserBrowseUrl;
 		setNativeFileBrowserBrowserUrl(fileBrowserBrowseUrl);
+	}
+	
+	/**
+	 * Set the Image browser's Url to Open when selecting images
+	 * @param fileBrowserBrowseUrl 
+	 * 		the Url to use
+	 */
+	public void setFileBrowserImageBrowseUrl(String fileBrowserImageBrowseUrl) {
+		this.fileBrowserImageBrowseUrl = fileBrowserImageBrowseUrl;
+		setNativeFileBrowserImageBrowserUrl(fileBrowserImageBrowseUrl);
 	}
 
 	/**
@@ -346,6 +357,10 @@ public class CKConfig {
 		this.@com.axeiya.gwtckeditor.client.CKConfig::config.filebrowserBrowseUrl = browseUrl;
 	}-*/;
 	
+	private native void setNativeFileBrowserImageBrowserUrl(String browseUrl) /*-{
+		this.@com.axeiya.gwtckeditor.client.CKConfig::config.filebrowserImageBrowseUrl = browseUrl;
+	}-*/;
+	
 	private native void setNativeEnterMode(String enterMode)/*-{
 		this.@com.axeiya.gwtckeditor.client.CKConfig::config.enterMode = enterMode;
 	}-*/;
@@ -517,9 +532,8 @@ public class CKConfig {
 		return fileBrowserBrowseUrl;
 	}
 
-	
-	
-	
-	
+	public String getFileBrowserImageBrowseUrl() {
+		return fileBrowserImageBrowseUrl;
+	}
 	
 }
