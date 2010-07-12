@@ -105,17 +105,19 @@ public class CKConfig {
 	private native void initConfig() /*-{}-*/;
 	
 	private native String getLocaleProperty() /*-{
-		var metaArray = $doc.getElementsByTagName("meta");
-		for (var i=0;i<metaArray.length;i++){
-			if (metaArray[i].getAttribute("name") == "gwt:property"){
-				var content = metaArray[i].getAttribute("content");
-				var contentArray = content.split("=");
-				if(contentArray[0] == "locale"){
-					var localeArray = contentArray[1].split("_");
-					return localeArray[0];
-				}
-			}
-		}
+//		var metaArray = $doc.getElementsByTagName("meta");
+//		for (var i=0;i<metaArray.length;i++){
+//			if (metaArray[i].getAttribute("name") == "gwt:property"){
+//				var content = metaArray[i].getAttribute("content");
+//				var contentArray = content.split("=");
+//				if(contentArray[0] == "locale"){
+//					var localeArray = contentArray[1].split("_");
+//					return localeArray[0];
+//				}
+//			}
+//		}
+		if($wnd.__gwt_Locale)
+			return $wnd.__gwt_Locale;
 		return "en";
 	}-*/;
 	
