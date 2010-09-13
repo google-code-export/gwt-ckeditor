@@ -49,6 +49,7 @@ public class CKConfig {
 	private boolean focusOnStartup;
 	private String fileBrowserBrowseUrl;
 	private String fileBrowserImageBrowseUrl;
+	private boolean tableResize;
 	
 	
 	JavaScriptObject config = JavaScriptObject.createObject();
@@ -155,6 +156,15 @@ public class CKConfig {
 		}
 	}
 	
+	
+	
+	public void setTableResize(boolean tableResize) {
+		this.tableResize = tableResize;
+		setNativeTableResize(tableResize);
+	}
+
+	
+
 	/**
 	 * Load the toolbar from the CKEDITOR.config.toolbar_{name} toolbar configuration (see CKEditor doc for further details) ; this will unset any Toolbar set before
 	 * @param name The toolbar name
@@ -427,6 +437,16 @@ public class CKConfig {
 	private native void setToolbarObject(JavaScriptObject toolbarArray) /*-{
 		this.@com.axeiya.gwtckeditor.client.CKConfig::config.toolbar_temp = toolbarArray;
 		this.@com.axeiya.gwtckeditor.client.CKConfig::config.toolbar = 'temp';
+	}-*/;
+	
+	private native void setNativeTableResize(boolean tableResize) /*-{
+		if(tableResize){
+			this.@com.axeiya.gwtckeditor.client.CKConfig::config.extraPlugins = 'tableresize';
+		}
+		else{
+			this.@com.axeiya.gwtckeditor.client.CKConfig::config.extraPlugins = '';
+		}
+		
 	}-*/;
 	
 	private native void setNativeTabIndex(int tabIndex) /*-{
