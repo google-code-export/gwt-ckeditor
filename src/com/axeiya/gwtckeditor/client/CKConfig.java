@@ -49,6 +49,7 @@ public class CKConfig {
 	private boolean focusOnStartup;
 	private String fileBrowserBrowseUrl;
 	private String fileBrowserImageBrowseUrl;
+	private String fileBrowserImageBrowseLinkUrl;
 	private boolean tableResize;
 	
 	
@@ -131,7 +132,7 @@ public class CKConfig {
 	 */
 	public void setFileBrowserBrowseUrl(String fileBrowserBrowseUrl) {
 		this.fileBrowserBrowseUrl = fileBrowserBrowseUrl;
-		setNativeFileBrowserBrowserUrl(fileBrowserBrowseUrl);
+		setNativeFileBrowserBrowseUrl(fileBrowserBrowseUrl);
 	}
 	
 	/**
@@ -141,7 +142,17 @@ public class CKConfig {
 	 */
 	public void setFileBrowserImageBrowseUrl(String fileBrowserImageBrowseUrl) {
 		this.fileBrowserImageBrowseUrl = fileBrowserImageBrowseUrl;
-		setNativeFileBrowserImageBrowserUrl(fileBrowserImageBrowseUrl);
+		setNativeFileBrowserImageBrowseUrl(fileBrowserImageBrowseUrl);
+	}
+	
+	/**
+	 * Set the Image browser's link tab Url to Open when selecting images
+	 * @param fileBrowserBrowseUrl 
+	 * 		the Url to use
+	 */
+	public void setFileBrowserImageBrowseLinkUrl(String fileBrowserImageBrowseLinkUrl) {
+		this.fileBrowserImageBrowseLinkUrl = fileBrowserImageBrowseLinkUrl;
+		setNativeFileBrowserImageBrowseLinkUrl(fileBrowserImageBrowseLinkUrl);
 	}
 
 	/**
@@ -365,13 +376,17 @@ public class CKConfig {
 		return config;
 	}
 	
-	private native void setNativeFileBrowserBrowserUrl(String browseUrl)/*-{
+	private native void setNativeFileBrowserBrowseUrl(String browseUrl)/*-{
 		this.@com.axeiya.gwtckeditor.client.CKConfig::config.filebrowserBrowseUrl = browseUrl;
 	}-*/;
 	
-	private native void setNativeFileBrowserImageBrowserUrl(String browseUrl) /*-{
+	private native void setNativeFileBrowserImageBrowseUrl(String browseUrl) /*-{
 		this.@com.axeiya.gwtckeditor.client.CKConfig::config.filebrowserImageBrowseUrl = browseUrl;
 	}-*/;
+	
+	private native void setNativeFileBrowserImageBrowseLinkUrl(String browseUrl) /*-{
+	this.@com.axeiya.gwtckeditor.client.CKConfig::config.filebrowserImageBrowseLinkUrl = browseUrl;
+}-*/;
 	
 	private native void setNativeEnterMode(String enterMode)/*-{
 		this.@com.axeiya.gwtckeditor.client.CKConfig::config.enterMode = enterMode;
