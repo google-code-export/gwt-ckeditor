@@ -93,4 +93,4 @@ RootPanel.get().add(ckee);
 		RootPanel.get().add(b);
 }}}
 
-You can launch your application. Keep in mind that in hosted mode, only a textarea will appears ; to see the CKEditor, you have to launch your app in compiled mode (i.e. click compile/browser in thje hosted browser).
+You can launch your application.
