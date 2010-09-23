@@ -51,8 +51,8 @@ public class CKConfig {
 	private String fileBrowserImageBrowseUrl;
 	private String fileBrowserImageBrowseLinkUrl;
 	private boolean tableResize;
+	private boolean shouldEnterSave = false;
 	private String skin;
-	
 	
 	JavaScriptObject config = JavaScriptObject.createObject();
 	
@@ -135,6 +135,15 @@ public class CKConfig {
 		this.fileBrowserBrowseUrl = fileBrowserBrowseUrl;
 		setNativeFileBrowserBrowseUrl(fileBrowserBrowseUrl);
 	}
+	
+	public void setShouldEnterSave(boolean enterShouldSave){
+		this.shouldEnterSave = enterShouldSave;
+		setNativeShouldEnterSave(enterShouldSave);
+	}
+	
+	private native void setNativeShouldEnterSave(boolean enterShouldSave)/*-{
+		this.@com.axeiya.gwtckeditor.client.CKConfig::config.keystrokes += [ 13 , 'save' ];
+	}-*/;
 	
 	/**
 	 * Set the Image browser's Url to Open when selecting images
@@ -364,16 +373,6 @@ public class CKConfig {
 	}
 
 	/**
-	 * Set the skin you want to use in the editor. 
-	 * available skins: karma, office2003, v2
-	 * @param skin
-	 */
-	public void setSkin(String skin) {
-		this.skin = skin;
-		setNativeSkin(skin);
-	}
-
-	/**
 	 * Returns a CKEDITOR.config object with the defined configuration
 	 * @return a CKEDITOR.config object
 	 */
@@ -465,10 +464,6 @@ public class CKConfig {
 		this.@com.axeiya.gwtckeditor.client.CKConfig::config.toolbar = 'temp';
 	}-*/;
 	
-	private native void setNativeSkin(String skin2)/*-{
-		this.@com.axeiya.gwtckeditor.client.CKConfig::config.skin = skin2;
-	}-*/; 
-
 	private native void setNativeTableResize(boolean tableResize) /*-{
 		if(tableResize){
 			this.@com.axeiya.gwtckeditor.client.CKConfig::config.extraPlugins = 'tableresize';
