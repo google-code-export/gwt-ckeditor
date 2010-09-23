@@ -569,6 +569,7 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Cl
 	public void onClick(ClickEvent event) {
 		if(event.getRelativeElement().getAttribute("name").equals("submit")){
 			event.stopPropagation();
+			System.out.println("Save");
 			SaveEvent.fire(this, this, this.getHTML());
 		}
 		
