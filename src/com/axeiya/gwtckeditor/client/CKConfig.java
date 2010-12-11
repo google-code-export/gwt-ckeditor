@@ -14,10 +14,12 @@
  */
 package com.axeiya.gwtckeditor.client;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.i18n.client.*;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.i18n.client.LocaleInfo;
 
 /**
  * Defines a configuration environment for a CKEditor
@@ -54,6 +56,9 @@ public class CKConfig {
 	private String filebrowserUploadUrl;
 	private String filebrowserImageUploadUrl;
 	private String filebrowserFlashUploadUrl;
+	
+	private List<String> fontNames;
+	private List<String> fontSizes;
 
 	private boolean tableResize;
 	private boolean shouldEnterSave = false;
@@ -104,11 +109,13 @@ public class CKConfig {
 	 */
 	public CKConfig(PRESET_TOOLBAR toolbar) {
 		initConfig();
+		fontNames = new ArrayList<String>();
+		fontSizes = new ArrayList<String>();
 		setToolbar(toolbar);
 		LocaleInfo l = LocaleInfo.getCurrentLocale();
 		// GWT.log("Locale : "+l.getLocaleName(),null);//always returns default
 		if (l.getLocaleName().equals("default")) {
-			GWT.log("LocaleProperty : " + getLocaleProperty(), null);
+			GWT.log("[gwt-CKEditor]Locale Property : " + getLocaleProperty(), null);
 			this.setLanguage(getLocaleProperty());
 		} else
 			this.setLanguage(LocaleInfo.getCurrentLocale().getLocaleName()
@@ -544,6 +551,42 @@ public class CKConfig {
 	private native void setNativeFilebrowserFlashUploadUrl(String filebrowserFlashUploadUrl) /*-{
 		this.@com.axeiya.gwtckeditor.client.CKConfig::config.filebrowserFlashUploadUrl = filebrowserFlashUploadUrl;
 	}-*/;
+	
+	private native void addNativeFontName(String fontName) /*-{
+		this.@com.axeiya.gwtckeditor.client.CKConfig::config.font_names = this.@com.axeiya.gwtckeditor.client.CKConfig::config.font_names + ";" + fontName; 
+	}-*/;
+	
+	/**
+	 * Clear all user-defined font_names
+	 */
+	public native void clearFontNames() /*-{
+		this.@com.axeiya.gwtckeditor.client.CKConfig::config.font_names = "";
+	}-*/;
+	
+	private void applyFontNames(){
+		clearFontNames();
+		for(String fontName : fontNames){
+			addNativeFontName(fontName);
+		}
+	}
+	
+	private native void addNativeFontSize(String fontSize) /*-{
+		this.@com.axeiya.gwtckeditor.client.CKConfig::config.fontSize_sizes = this.@com.axeiya.gwtckeditor.client.CKConfig::config.fontSize_sizes + ";" + fontSize; 
+	}-*/;
+	
+	/**
+	 * Clear all user-defined font_sizes
+	 */
+	public native void clearFontSizes() /*-{
+		this.@com.axeiya.gwtckeditor.client.CKConfig::config.fontSize_sizes = "";
+	}-*/;
+	
+	private void applyFontSizes(){
+		clearFontSizes();
+		for(String fontSize : fontSizes){
+			addNativeFontSize(fontSize);
+		}
+	}
 
 	/**
 	 * Returns the config height
@@ -681,6 +724,24 @@ public class CKConfig {
 
 	public String getFilebrowserFlashUploadUrl() {
 		return filebrowserFlashUploadUrl;
+	}
+	
+	/**
+	 * Adds a font_name to the font_names list
+	 * @param fontName
+	 */
+	public void addFontName(String fontName){
+		fontNames.add(fontName);
+		applyFontNames();
+	}
+	
+	/**
+	 * Adds a font_size to the fontSize_sizes list
+	 * @param fontSize The size string, formatted as "label/{font-size in CSS style}". example : '16/16px'.
+	 */
+	public void addFontSize(String fontSize){
+		fontSizes.add(fontSize);
+		applyFontSizes();
 	}
 
 }
