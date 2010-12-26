@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="gwt-ckeditor" default="build" basedir=".">
+
+	<property name="src.dir" value="src" />
+
+	<property name="build.dir" value="build" />
+	<property name="classes.dir" value="${build.dir}/classes" />
+	<property name="jar.dir" value="${build.dir}/jar" />
+
+	<!-- Configure path to GWT SDK -->
+	<property name="gwt.sdk" location="" />
+
+	<path id="project.class.path">
+		<pathelement location="${gwt.sdk}/gwt-user.jar" />
+	</path>
+
+	<target name="clean">
+		<delete dir="${build.dir}" />
+	</target>
+
+	<target name="compile">
+		<mkdir dir="${classes.dir}" />
+		<javac srcdir="${src.dir}" destdir="${classes.dir}">
+			<classpath refid="project.class.path" />
+		</javac>
+	</target>
+
+	<target name="build" depends="compile">
+		<mkdir dir="${jar.dir}" />
+		<jar destfile="${jar.dir}/${ant.project.name}.jar">
+			<manifest>
+			</manifest>
+			<fileset dir="${classes.dir}" />
+			<fileset dir="${src.dir}" />
+		</jar>
+	</target>
+
+
+</project>
+
