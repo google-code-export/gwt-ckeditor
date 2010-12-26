@@ -12,7 +12,7 @@
 	<property name="gwt.sdk" location="" />
 
 	<tstamp>
-		<format property="TODAY_UK" pattern="yyyy-mm-dd" />
+		<format property="TODAY_UK" pattern="yyyyMMdd" />
 	</tstamp>
 
 	<path id="project.class.path">
