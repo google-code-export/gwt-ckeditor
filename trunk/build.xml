@@ -6,9 +6,14 @@
 	<property name="build.dir" value="build" />
 	<property name="classes.dir" value="${build.dir}/classes" />
 	<property name="jar.dir" value="${build.dir}/jar" />
+	<property name="dest.dir" value="" />
 
 	<!-- Configure path to GWT SDK -->
 	<property name="gwt.sdk" location="" />
+
+	<tstamp>
+		<format property="TODAY_UK" pattern="yyyy-mm-dd" />
+	</tstamp>
 
 	<path id="project.class.path">
 		<pathelement location="${gwt.sdk}/gwt-user.jar" />
@@ -27,7 +32,7 @@
 
 	<target name="build" depends="compile">
 		<mkdir dir="${jar.dir}" />
-		<jar destfile="${jar.dir}/${ant.project.name}.jar">
+		<jar destfile="${jar.dir}/${ant.project.name}-SNAPSHOT-${TODAY_UK}.jar">
 			<manifest>
 			</manifest>
 			<fileset dir="${classes.dir}" />
@@ -35,6 +40,9 @@
 		</jar>
 	</target>
 
+	<target name="deploy" depends="build">
+		<copy file="${jar.dir}/${ant.project.name}-SNAPSHOT-${TODAY_UK}.jar" tofile="{dest.dir}/${ant.project.name}-SNAPSHOT-${TODAY_UK}.jar" />
+	</target>
 
 </project>
 
