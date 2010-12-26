@@ -241,15 +241,6 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Cl
 
 	private native void replaceTextArea(Object o, JavaScriptObject config) /*-{
 		 this.@com.axeiya.gwtckeditor.client.CKEditor::editor = $wnd.CKEDITOR.replace(o,config);
-
-		
-		
-//		if($wnd.CKEDITOR.htmlDataProcessor()){
-//			this.@com.axeiya.gwtckeditor.client.CKEditor::dataProcessor = new $wnd.CKEDITOR.htmlDataProcessor(this.@com.axeiya.gwtckeditor.client.CKEditor::editor);
-//			this.@com.axeiya.gwtckeditor.client.CKEditor::editor.dataProcessor = this.@com.axeiya.gwtckeditor.client.CKEditor::dataProcessor;
-//		}else if(this.@com.axeiya.gwtckeditor.client.CKEditor::editor.dataProcessor){
-//			this.@com.axeiya.gwtckeditor.client.CKEditor::dataProcessor = this.@com.axeiya.gwtckeditor.client.CKEditor::editor.dataProcessor;
-//		}
 	}-*/;
 
 	@Deprecated
@@ -262,9 +253,14 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Cl
 	}-*/;
 	
 	private native String getNativeHTML() /*-{
-	var e = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
-	return e.getData();
-}-*/;
+		var e = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
+		return e.getData();
+	}-*/;
+	
+	public native JavaScriptObject getSelection() /*-{
+		var e = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
+		return e.getSelection();
+	}-*/;
 	
 	private native void setNativeFocus(boolean focus)/*-{
 		
@@ -299,23 +295,9 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Cl
 	}-*/;
 
 	private native void setNativeHTML(String html) /*-{
-	var e = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
-	e.setData(html,new Function());
-}-*/;
-	
-//	private native void setNativeBreakLineChars(String breakLineChars) /*-{
-//		var dataProcessor = this.@com.axeiya.gwtckeditor.client.CKEditor::dataProcessor;
-//		if(dataProcessor){
-//			dataProcessor.writer.lineBreakChars = breakLineChars;
-//		}
-//	}-*/;
-
-//	private native void setNativeSelfClosingEnd(String selfClosingEnd) /*-{
-//		var dataProcessor = this.@com.axeiya.gwtckeditor.client.CKEditor::dataProcessor;
-//		if(dataProcessor){
-//			dataProcessor.writer.selfClosingEnd = selfClosingEnd;
-//		}
-//	}-*/;
+		var e = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
+		e.setData(html,new Function());
+	}-*/;
 	
 	/**
 	 * If you want to set the width, you must do so with the configuration object before instanciating
