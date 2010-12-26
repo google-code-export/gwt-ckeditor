@@ -41,7 +41,7 @@
 	</target>
 
 	<target name="deploy" depends="build">
-		<copy file="${jar.dir}/${ant.project.name}-SNAPSHOT-${TODAY_UK}.jar" tofile="{dest.dir}/${ant.project.name}-SNAPSHOT-${TODAY_UK}.jar" />
+		<copy file="${jar.dir}/${ant.project.name}-SNAPSHOT-${TODAY_UK}.jar" tofile="${dest.dir}/${ant.project.name}-SNAPSHOT-${TODAY_UK}.jar" />
 	</target>
 
 </project>
