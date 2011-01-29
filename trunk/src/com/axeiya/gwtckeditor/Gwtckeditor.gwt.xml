@@ -9,4 +9,5 @@
   <!-- Specify the app entry point class.                         -->
   
   <public path="public"/>
+  <script src="ckeditor/ckeditor.js"></script>
 </module>
