@@ -56,7 +56,7 @@ public class CKConfig {
 	private String filebrowserUploadUrl;
 	private String filebrowserImageUploadUrl;
 	private String filebrowserFlashUploadUrl;
-	
+
 	private List<String> fontNames;
 	private List<String> fontSizes;
 
@@ -118,8 +118,7 @@ public class CKConfig {
 			GWT.log("[gwt-CKEditor]Locale Property : " + getLocaleProperty(), null);
 			this.setLanguage(getLocaleProperty());
 		} else
-			this.setLanguage(LocaleInfo.getCurrentLocale().getLocaleName()
-					.split("_")[0]);
+			this.setLanguage(LocaleInfo.getCurrentLocale().getLocaleName().split("_")[0]);
 	}
 
 	private native void initConfig() /*-{
@@ -127,20 +126,9 @@ public class CKConfig {
 	}-*/;
 
 	private native String getLocaleProperty() /*-{
-		//		var metaArray = $doc.getElementsByTagName("meta");
-		//		for (var i=0;i<metaArray.length;i++){
-		//			if (metaArray[i].getAttribute("name") == "gwt:property"){
-		//				var content = metaArray[i].getAttribute("content");
-		//				var contentArray = content.split("=");
-		//				if(contentArray[0] == "locale"){
-		//					var localeArray = contentArray[1].split("_");
-		//					return localeArray[0];
-		//				}
-		//			}
-		//		}
-				if($wnd.__gwt_Locale)
-					return $wnd.__gwt_Locale;
-				return "en";
+		if ($wnd.__gwt_Locale)
+			return $wnd.__gwt_Locale;
+		return "en";
 	}-*/;
 
 	/**
@@ -160,7 +148,8 @@ public class CKConfig {
 	}
 
 	private native void setNativeShouldEnterSave(boolean enterShouldSave)/*-{
-		this.@com.axeiya.gwtckeditor.client.CKConfig::config.keystrokes += [ 13 , 'save' ];
+		this.@com.axeiya.gwtckeditor.client.CKConfig::config.keystrokes += [
+				13, 'save' ];
 	}-*/;
 
 	/**
@@ -180,8 +169,7 @@ public class CKConfig {
 	 * @param fileBrowserBrowseUrl
 	 *            the Url to use
 	 */
-	public void setFileBrowserImageBrowseLinkUrl(
-			String fileBrowserImageBrowseLinkUrl) {
+	public void setFileBrowserImageBrowseLinkUrl(String fileBrowserImageBrowseLinkUrl) {
 		this.fileBrowserImageBrowseLinkUrl = fileBrowserImageBrowseLinkUrl;
 		setNativeFileBrowserImageBrowseLinkUrl(fileBrowserImageBrowseLinkUrl);
 	}
@@ -520,10 +508,9 @@ public class CKConfig {
 	}-*/;
 
 	private native void setNativeTableResize(boolean tableResize) /*-{
-		if(tableResize){
+		if (tableResize) {
 			this.@com.axeiya.gwtckeditor.client.CKConfig::config.extraPlugins = 'tableresize';
-		}
-		else{
+		} else {
 			this.@com.axeiya.gwtckeditor.client.CKConfig::config.extraPlugins = '';
 		}
 	}-*/;
@@ -551,39 +538,41 @@ public class CKConfig {
 	private native void setNativeFilebrowserFlashUploadUrl(String filebrowserFlashUploadUrl) /*-{
 		this.@com.axeiya.gwtckeditor.client.CKConfig::config.filebrowserFlashUploadUrl = filebrowserFlashUploadUrl;
 	}-*/;
-	
+
 	private native void addNativeFontName(String fontName) /*-{
-		this.@com.axeiya.gwtckeditor.client.CKConfig::config.font_names = this.@com.axeiya.gwtckeditor.client.CKConfig::config.font_names + ";" + fontName; 
+		this.@com.axeiya.gwtckeditor.client.CKConfig::config.font_names = this.@com.axeiya.gwtckeditor.client.CKConfig::config.font_names
+				+ ";" + fontName;
 	}-*/;
-	
+
 	/**
 	 * Clear all user-defined font_names
 	 */
 	public native void clearFontNames() /*-{
 		this.@com.axeiya.gwtckeditor.client.CKConfig::config.font_names = "";
 	}-*/;
-	
-	private void applyFontNames(){
+
+	private void applyFontNames() {
 		clearFontNames();
-		for(String fontName : fontNames){
+		for (String fontName : fontNames) {
 			addNativeFontName(fontName);
 		}
 	}
-	
+
 	private native void addNativeFontSize(String fontSize) /*-{
-		this.@com.axeiya.gwtckeditor.client.CKConfig::config.fontSize_sizes = this.@com.axeiya.gwtckeditor.client.CKConfig::config.fontSize_sizes + ";" + fontSize; 
+		this.@com.axeiya.gwtckeditor.client.CKConfig::config.fontSize_sizes = this.@com.axeiya.gwtckeditor.client.CKConfig::config.fontSize_sizes
+				+ ";" + fontSize;
 	}-*/;
-	
+
 	/**
 	 * Clear all user-defined font_sizes
 	 */
 	public native void clearFontSizes() /*-{
 		this.@com.axeiya.gwtckeditor.client.CKConfig::config.fontSize_sizes = "";
 	}-*/;
-	
-	private void applyFontSizes(){
+
+	private void applyFontSizes() {
 		clearFontSizes();
-		for(String fontSize : fontSizes){
+		for (String fontSize : fontSizes) {
 			addNativeFontSize(fontSize);
 		}
 	}
@@ -725,21 +714,25 @@ public class CKConfig {
 	public String getFilebrowserFlashUploadUrl() {
 		return filebrowserFlashUploadUrl;
 	}
-	
+
 	/**
 	 * Adds a font_name to the font_names list
+	 * 
 	 * @param fontName
 	 */
-	public void addFontName(String fontName){
+	public void addFontName(String fontName) {
 		fontNames.add(fontName);
 		applyFontNames();
 	}
-	
+
 	/**
 	 * Adds a font_size to the fontSize_sizes list
-	 * @param fontSize The size string, formatted as "label/{font-size in CSS style}". example : '16/16px'.
+	 * 
+	 * @param fontSize
+	 *            The size string, formatted as
+	 *            "label/{font-size in CSS style}". example : '16/16px'.
 	 */
-	public void addFontSize(String fontSize){
+	public void addFontSize(String fontSize) {
 		fontSizes.add(fontSize);
 		applyFontSizes();
 	}

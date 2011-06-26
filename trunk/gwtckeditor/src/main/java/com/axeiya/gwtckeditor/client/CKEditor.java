@@ -17,7 +17,6 @@ package com.axeiya.gwtckeditor.client;
 import com.axeiya.gwtckeditor.client.event.HasSaveHandlers;
 import com.axeiya.gwtckeditor.client.event.SaveEvent;
 import com.axeiya.gwtckeditor.client.event.SaveHandler;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Node;
@@ -49,8 +48,8 @@ import com.google.gwt.user.client.ui.TextArea;
  * @author Damien Picard <damien.picard@axeiya.com>
  * @author Emmanuel COQUELIN <emmanuel.coquelin@axeiya.com>
  */
-public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, HasValueChangeHandlers<String>, ClickHandler, HasAlignment,
-		HasHTML, HasText {
+public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, HasValueChangeHandlers<String>, ClickHandler, HasAlignment, HasHTML,
+		HasText {
 
 	protected String name;
 	protected JavaScriptObject editor;
@@ -58,7 +57,6 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Ha
 	protected Element baseTextArea;
 	protected JavaScriptObject dataProcessor;
 	protected CKConfig config;
-	protected boolean enabledInHostedMode = true;
 	protected boolean replaced = false;
 	protected boolean textWaitingForAttachment = false;
 	protected String waitingText;
@@ -96,51 +94,16 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Ha
 	}
 
 	/**
-	 * Creates an editor with the CKConfig.basic configuration.
-	 * 
-	 * @param enabledInHostedMode
-	 *            Indicates if the editor must be used in Hosted Mode
-	 */
-	public CKEditor(boolean enabledInHostedMode) {
-		this(enabledInHostedMode, CKConfig.basic);
-	}
-
-	/**
-	 * Creates an editor with the given CKConfig
-	 * 
-	 * @param enabledInHostedMode
-	 *            Indicates if the editor must be used in Hosted Mode
-	 * @param config
-	 *            The configuration
-	 */
-	public CKEditor(boolean enabledInHostedMode, CKConfig config) {
-		super();
-		this.enabledInHostedMode = enabledInHostedMode;
-		this.config = config;
-		initCKEditor();
-	}
-
-	/**
 	 * Initialize the editor
 	 */
 	private void initCKEditor() {
 		div = DOM.createDiv();
+		baseTextArea = DOM.createTextArea();
+		name = HTMLPanel.createUniqueId();
+		div.appendChild(baseTextArea);
+		DOM.setElementAttribute(baseTextArea, "name", name);
+		this.sinkEvents(Event.ONCLICK | Event.KEYEVENTS);
 
-		if (GWT.isScript() || enabledInHostedMode) {
-			baseTextArea = DOM.createTextArea();
-			name = HTMLPanel.createUniqueId();
-			div.appendChild(baseTextArea);
-			DOM.setElementAttribute(baseTextArea, "name", name);
-			this.sinkEvents(Event.ONCLICK | Event.KEYEVENTS);
-
-		} else {
-			textArea = new TextArea();
-			if (config.getHeight() != null)
-				textArea.setHeight(config.getHeight());
-			if (config.getWidth() != null)
-				textArea.setWidth(config.getWidth());
-			div.appendChild(textArea.getElement());
-		}
 		if (config.isUsingFormPanel()) {
 			FormPanel form = new FormPanel();
 			Button submit = new Button();
@@ -168,7 +131,7 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Ha
 	 * Replace the text Area by a CKEditor Instance
 	 */
 	protected void initInstance() {
-		if ((GWT.isScript() || enabledInHostedMode) && !replaced && !disabled) {
+		if (!replaced && !disabled) {
 			replaced = true;
 			replaceTextArea(baseTextArea, this.config.getConfigObject());
 
@@ -192,9 +155,9 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Ha
 
 			if (waitingForDisabling) {
 				this.waitingForDisabling = false;
-				setDisabled(this.disabled);
+				setEnabled(this.disabled);
 			}
-			
+
 			listenToBlur();
 			/*
 			 * if (config.getBreakLineChars() != null) {
@@ -210,44 +173,36 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Ha
 	private native void setAddFocusOnLoad(boolean focus)/*-{
 		var e = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
 
-		e.on('dataReady', function(ev){
+		e.on('dataReady', function(ev) {
 
-		if(focus){
-			e.focus();
-			var lastc = e.document.getBody().getLast();		
-			e.getSelection().selectElement(lastc);
-			var range = e.getSelection().getRanges()[0];
-			range.collapse(false);
-			range.setStart(lastc,  range.startOffset);
-			try{
-				range.setEnd(lastc , range.endOffset);
-			}catch(err){
+			if (focus) {
+				e.focus();
+				var lastc = e.document.getBody().getLast();
+				e.getSelection().selectElement(lastc);
+				var range = e.getSelection().getRanges()[0];
+				range.collapse(false);
+				range.setStart(lastc, range.startOffset);
+				try {
+					range.setEnd(lastc, range.endOffset);
+				} catch (err) {
+				}
+				range.select();
 			}
-			range.select();
-		}
 
 		});
 	}-*/;
-	
+
 	private native void listenToBlur() /*-{
 		var me = this;
 		var e = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
-		e.on('blur', function(ev){
+		e.on('blur', function(ev) {
 			me.@com.axeiya.gwtckeditor.client.CKEditor::dispatchBlur()();
 		});
 	}-*/;
 
 	private native void replaceTextArea(Object o, JavaScriptObject config) /*-{
-		this.@com.axeiya.gwtckeditor.client.CKEditor::editor = $wnd.CKEDITOR.replace(o,config);
-	}-*/;
-
-	@Deprecated
-	/**
-	 * Use getNativeHTML() instead
-	 */
-	private native String getNativeText() /*-{
-		var e = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
-		return e.getData();
+		this.@com.axeiya.gwtckeditor.client.CKEditor::editor = $wnd.CKEDITOR
+				.replace(o, config);
 	}-*/;
 
 	private native String getNativeHTML() /*-{
@@ -261,37 +216,28 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Ha
 	}-*/;
 
 	private native void setNativeFocus(boolean focus)/*-{
-		if(focus){
+		if (focus) {
 			var e = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
-			if(e){
+			if (e) {
 				e.focus();
 
-				var lastc = e.document.getBody().getLast();		
+				var lastc = e.document.getBody().getLast();
 				e.getSelection().selectElement(lastc);
 				var range = e.getSelection().getRanges()[0];
 				range.collapse(false);
-				range.setStart(lastc,  range.startOffset);
-				try{
-					range.setEnd(lastc , range.endOffset);
-				}catch(err){
+				range.setStart(lastc, range.startOffset);
+				try {
+					range.setEnd(lastc, range.endOffset);
+				} catch (err) {
 				}
 				range.select();
 			}
 		}
 	}-*/;
 
-	@Deprecated
-	/**
-	 * Use setNativeHTML(String html) instead
-	 */
-	private native void setNativeText(String text) /*-{
-		var e = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
-		e.setData(text,new Function());
-	}-*/;
-
 	private native void setNativeHTML(String html) /*-{
 		var e = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
-		e.setData(html,new Function());
+		e.setData(html, new Function());
 	}-*/;
 
 	/**
@@ -321,11 +267,7 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Ha
 	 */
 	@Deprecated
 	public String getText() {
-		if (GWT.isScript() || enabledInHostedMode) {
-			return getNativeText();
-		} else {
-			return textArea.getText();
-		}
+		return getNativeHTML();
 	}
 
 	/**
@@ -335,14 +277,12 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Ha
 	 * @param focus
 	 */
 	public void setFocus(boolean focus) {
-		if (GWT.isScript() || enabledInHostedMode) {
-			if (replaced == true) {
-				setNativeFocus(focus);
-			} else {
-				Window.alert("You can't set the focus on startup with the method setFocus(boolean focus).\n"
-						+ "If you want to add focus to your instance on startup, use the config object\n"
-						+ "with the method setFocusOnStartup(boolean focus) instead.");
-			}
+		if (replaced == true) {
+			setNativeFocus(focus);
+		} else {
+			Window.alert("You can't set the focus on startup with the method setFocus(boolean focus).\n"
+					+ "If you want to add focus to your instance on startup, use the config object\n"
+					+ "with the method setFocusOnStartup(boolean focus) instead.");
 		}
 	}
 
@@ -351,70 +291,68 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Ha
 	 * 
 	 * @param disabled
 	 */
-	public void setDisabled(boolean disabled) {
+	public void setEnabled(boolean enabled) {
+		//FIXME : rework this part to remove the !
+		boolean disabled = !enabled;
 
 		if (this.disabled != disabled) {
 			this.disabled = disabled;
 
-			if (GWT.isScript() || enabledInHostedMode) {
-				if (disabled) {
-					ScrollPanel scroll = new ScrollPanel();
-					disabledHTML = new HTML();
-					disabledHTML.setStyleName("GWTCKEditor-Disabled");
-					scroll.setWidget(disabledHTML);
+			if (disabled) {
+				ScrollPanel scroll = new ScrollPanel();
+				disabledHTML = new HTML();
+				disabledHTML.setStyleName("GWTCKEditor-Disabled");
+				scroll.setWidget(disabledHTML);
 
-					if (config.getWidth() != null)
-						scroll.setWidth(config.getWidth());
+				if (config.getWidth() != null)
+					scroll.setWidth(config.getWidth());
 
-					if (config.getHeight() != null)
-						scroll.setHeight(config.getHeight());
+				if (config.getHeight() != null)
+					scroll.setHeight(config.getHeight());
 
-					String htmlString = new String();
+				String htmlString = new String();
 
-					if (replaced) {
-						htmlString = getHTML();
-					} else {
-						htmlString = waitingText;
+				if (replaced) {
+					htmlString = getHTML();
+				} else {
+					htmlString = waitingText;
+				}
+
+				DivElement divElement = DivElement.as(this.getElement().getFirstChildElement());
+				Node node = divElement.getFirstChild();
+				while (node != null) {
+					if (node.getNodeType() == Node.ELEMENT_NODE) {
+						com.google.gwt.dom.client.Element element = com.google.gwt.dom.client.Element.as(node);
+						if (element.getTagName().equalsIgnoreCase("textarea")) {
+							destroyInstance();
+							replaced = false;
+							divElement.removeChild(node);
+							ckEditorNode = node;
+						}
 					}
+					node = node.getNextSibling();
+				}
+				disabledHTML.setHTML(htmlString);
+				div.appendChild(scroll.getElement());
 
+			} else {
+				if (ckEditorNode != null) {
 					DivElement divElement = DivElement.as(this.getElement().getFirstChildElement());
 					Node node = divElement.getFirstChild();
 					while (node != null) {
 						if (node.getNodeType() == Node.ELEMENT_NODE) {
 							com.google.gwt.dom.client.Element element = com.google.gwt.dom.client.Element.as(node);
-							if (element.getTagName().equalsIgnoreCase("textarea")) {
-								destroyInstance();
-								replaced = false;
+							if (element.getTagName().equalsIgnoreCase("div")) {
 								divElement.removeChild(node);
-								ckEditorNode = node;
+
 							}
 						}
 						node = node.getNextSibling();
 					}
-					disabledHTML.setHTML(htmlString);
-					div.appendChild(scroll.getElement());
+					div.appendChild(baseTextArea);
+					initInstance();
 
-				} else {
-					if (ckEditorNode != null) {
-						DivElement divElement = DivElement.as(this.getElement().getFirstChildElement());
-						Node node = divElement.getFirstChild();
-						while (node != null) {
-							if (node.getNodeType() == Node.ELEMENT_NODE) {
-								com.google.gwt.dom.client.Element element = com.google.gwt.dom.client.Element.as(node);
-								if (element.getTagName().equalsIgnoreCase("div")) {
-									divElement.removeChild(node);
-
-								}
-							}
-							node = node.getNextSibling();
-						}
-						div.appendChild(baseTextArea);
-						initInstance();
-
-					}
 				}
-			} else {
-				textArea.setEnabled(disabled);
 			}
 		}
 
@@ -422,8 +360,8 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Ha
 
 	private native void destroyInstance()/*-{
 		var editor = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
-		if(editor){
-		editor.destroy();
+		if (editor) {
+			editor.destroy();
 		}
 	}-*/;
 
@@ -433,14 +371,10 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Ha
 	 * @return the editor text
 	 */
 	public String getHTML() {
-		if (GWT.isScript() || enabledInHostedMode) {
-			if (replaced)
-				return getNativeHTML();
-			else {
-				return waitingText;
-			}
-		} else {
-			return textArea.getText();
+		if (replaced)
+			return getNativeHTML();
+		else {
+			return waitingText;
 		}
 	}
 
@@ -461,15 +395,11 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Ha
 	 */
 	@Deprecated
 	public void setText(String text) {
-		if (GWT.isScript() || enabledInHostedMode) {
-			if (replaced)
-				setNativeText(text);
-			else {
-				waitingText = text;
-				textWaitingForAttachment = true;
-			}
-		} else {
-			textArea.setText(text);
+		if (replaced)
+			setNativeHTML(text);
+		else {
+			waitingText = text;
+			textWaitingForAttachment = true;
 		}
 	}
 
@@ -480,15 +410,11 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Ha
 	 *            The html string to set
 	 */
 	public void setHTML(String html) {
-		if (GWT.isScript() || enabledInHostedMode) {
-			if (replaced)
-				setNativeHTML(html);
-			else {
-				waitingText = html;
-				textWaitingForAttachment = true;
-			}
-		} else {
-			textArea.setText(html);
+		if (replaced)
+			setNativeHTML(html);
+		else {
+			waitingText = html;
+			textWaitingForAttachment = true;
 		}
 	}
 
@@ -509,36 +435,17 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Ha
 	 */
 	private static native String getParentClassname(JavaScriptObject o) /*-{
 		var classname = o.parentNode.getAttribute("class");
-		if(classname == null)
-		return o.parentNode.className;
+		if (classname == null)
+			return o.parentNode.className;
 		return classname;
 	}-*/;
-
-	@Override
-	public void onBrowserEvent(Event event) {
-		super.onBrowserEvent(event);
-		// System.out.println("Declenche");
-		// String classString = getParentClassname(event.getEventTarget());
-		// String[] classes = classString.split(" ");
-		// for (String c : classes) {
-		// if (c.trim().equals("cke_button_save")) {
-		// event.stopPropagation();
-		// SaveEvent.fire(this, this, this.getText());
-		// return;
-		// }
-		// }
-		//
-
-	}
 
 	@Override
 	public void onClick(ClickEvent event) {
 		if (event.getRelativeElement().getAttribute("name").equals("submit")) {
 			event.stopPropagation();
-			System.out.println("Save");
 			SaveEvent.fire(this, this, this.getHTML());
 		}
-
 	}
 
 	@Override
@@ -579,11 +486,11 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Ha
 	public HandlerRegistration addValueChangeHandler(ValueChangeHandler<String> handler) {
 		return this.addHandler(handler, ValueChangeEvent.getType());
 	}
-	
+
 	/**
 	 * Dispatch a blur CKEditor event to a ValueChangeEvent
 	 */
-	private void dispatchBlur(){
+	private void dispatchBlur() {
 		ValueChangeEvent.fire(this, this.getHTML());
 	}
 
