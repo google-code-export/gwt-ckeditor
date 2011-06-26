@@ -1,4 +1,4 @@
-package com.axeiya.gwtckeditor.client.events;
+package com.axeiya.gwtckeditor.client.event;
 
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.event.shared.HasHandlers;

@@ -14,9 +14,9 @@
  */
 package com.axeiya.gwtckeditor.client;
 
-import com.axeiya.gwtckeditor.client.events.HasSaveHandlers;
-import com.axeiya.gwtckeditor.client.events.SaveEvent;
-import com.axeiya.gwtckeditor.client.events.SaveHandler;
+import com.axeiya.gwtckeditor.client.event.HasSaveHandlers;
+import com.axeiya.gwtckeditor.client.event.SaveEvent;
+import com.axeiya.gwtckeditor.client.event.SaveHandler;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.DivElement;
