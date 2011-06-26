@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.3.0//EN" "http://google-web-toolkit.googlecode.com/svn/tags/2.3.0/distro-source/core/src/gwt-module.dtd">
+<module rename-to="sample">
+	<inherits name="com.google.gwt.user.User" />
+	<inherits name="com.axeiya.gwtckeditor.Gwtckeditor" />
+
+	<public path="public" />
+	<source path="client" />
+	<entry-point class="com.axeiya.gwtckeditorsample.client.SampleApp">
+	</entry-point>
+</module>
