@@ -46,7 +46,7 @@ And add the dependancy (provided because there is no runtime need)
   <scope>provided</scope>
 </dependency>
 }}}
-By default, it will use teh latest snapshot from the repository ; you can enforce a specific version by using the <classiier> :
+By default, it will use teh latest snapshot from the repository ; you can enforce a specific version by using the classifier :
 {{{
 <dependency>
   <groupId>com.axeiya.gwt</groupId>
