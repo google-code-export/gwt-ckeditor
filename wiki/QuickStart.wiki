@@ -18,7 +18,7 @@ For example :
 {{{
 <module rename-to='cksample'>
 }}}
-Its content is usefull for JS files importation (here "cksample")
+Its content is useful for JS files importation (here "cksample")
 
 ===Edit your App.html file===
 Add JS importation :
