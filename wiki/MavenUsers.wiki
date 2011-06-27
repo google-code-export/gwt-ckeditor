@@ -1,12 +1,12 @@
 #summary gwt-ckeditor integration with Maven
 
 = Introduction =
-This is now possible to use gwt-ckeditor with Maven. The integration allows users to use the latest released version, or nightly snapshots.
+It is now possible to use gwt-ckeditor with Maven. This integration allows users to use the latest released version, or nightly snapshots.
 
 
 = Releases =
 
-To use Release version, add the Axeiya Release Repository :
+To use the Release version, add the Axeiya Release Repository :
 {{{
 <repositories>
   ...
@@ -16,7 +16,7 @@ To use Release version, add the Axeiya Release Repository :
   </repository>
 </repositories>
 }}}
-And add the dependancy (provided because there is no runtime need)
+And add the dependency (provided because there is no runtime need)
 {{{
 <dependency>
   <groupId>com.axeiya.gwt</groupId>
@@ -37,7 +37,7 @@ Add the Axeiya Snapshots Repository :
   </repository>
 </repositories>
 }}}
-And add the dependancy (provided because there is no runtime need)
+And add the dependency (provided because there is no runtime need)
 {{{
 <dependency>
   <groupId>com.axeiya.gwt</groupId>
@@ -46,7 +46,7 @@ And add the dependancy (provided because there is no runtime need)
   <scope>provided</scope>
 </dependency>
 }}}
-By default, it will use teh latest snapshot from the repository ; you can enforce a specific version by using the classifier :
+By default, it will use the latest snapshot from the repository ; you can enforce a specific version by using the classifier :
 {{{
 <dependency>
   <groupId>com.axeiya.gwt</groupId>
