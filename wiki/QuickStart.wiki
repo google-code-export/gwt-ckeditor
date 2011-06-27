@@ -26,7 +26,6 @@ Add JS importation :
 <script type="text/javascript">
    var CKEDITOR_BASEPATH = 'cksample/ckeditor/';
 </script>
-<script type="text/javascript" language="javascript" src="cksample/ckeditor/ckeditor.js"></script>
 }}}
 
 The variable CKEDITOR_BASEPATH is used to define your ckeditor path. Replace "cksample" by your project name, as it appears in the "rename-to" directive.
