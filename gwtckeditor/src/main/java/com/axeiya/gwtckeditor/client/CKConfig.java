@@ -56,6 +56,7 @@ public class CKConfig {
 	private String filebrowserUploadUrl;
 	private String filebrowserImageUploadUrl;
 	private String filebrowserFlashUploadUrl;
+	private List<String> extraPlugins;
 
 	private List<String> fontNames;
 	private List<String> fontSizes;
@@ -78,6 +79,10 @@ public class CKConfig {
 	 */
 	public enum TOOLBAR_OPTIONS {
 		Source, Save, NewPage, Preview, Templates, Cut, Copy, Paste, PasteText, PasteFromWord, Print, SpellChecker, Scayt, Undo, Redo, Find, Replace, SelectAll, RemoveFormat, Form, Checkbox, Radio, TextField, Textarea, Select, Button, ImageButton, HiddenField, Bold, Italic, Underline, Strike, Subscript, Superscript, NumberedList, BulletedList, Outdent, Indent, Blockquote, JustifyLeft, JustifyCenter, JustifyRight, JustifyBlock, Link, Unlink, Anchor, Image, Flash, Table, HorizontalRule, Smiley, SpecialChar, PageBreak, Styles, Format, Font, FontSize, TextColor, BGColor, Maximize, ShowBlocks, About, _
+	}
+
+	public enum AVAILABLE_PLUGINS {
+		a11yhelp, about, adobeair, ajax, autogrow, bbcode, clipboard, colordialog, devtools, dialog, div, docprops, find, flash, forms, iframe, iframedialog, image, link, liststyle, pagebreak, pastefromword, pasteext, placeholder, scayt, showblocks, smiley, specialchar, styles, stylesheetparser, table, tableresize, tabletools, templates, uicolor, wsc, xml;
 	}
 
 	enum LINE_TYPE {
@@ -111,6 +116,7 @@ public class CKConfig {
 		initConfig();
 		fontNames = new ArrayList<String>();
 		fontSizes = new ArrayList<String>();
+		extraPlugins = new ArrayList<String>();
 		setToolbar(toolbar);
 		LocaleInfo l = LocaleInfo.getCurrentLocale();
 		// GWT.log("Locale : "+l.getLocaleName(),null);//always returns default
@@ -416,12 +422,44 @@ public class CKConfig {
 	}
 
 	/**
+	 * Add an extra plugin to the Editor's configuration
+	 * 
+	 * @param plugin
+	 *            Plugin to add
+	 */
+	public void addExtraPlugin(AVAILABLE_PLUGINS plugin) {
+		addExtraPlugin(plugin.toString());
+	}
+
+	/**
+	 * Add an extra plugin to the Editor's configuration
+	 * 
+	 * @param plugin
+	 *            Plugin to add
+	 */
+	public void addExtraPlugin(String plugin) {
+		if (!extraPlugins.contains(plugin)) {
+			extraPlugins.add(plugin);
+			applyExtraPlugin();
+		}
+	}
+
+	private void applyExtraPlugin() {
+		if (!extraPlugins.isEmpty()) {
+			String extraPlugin = extraPlugins.get(0);
+			for (int i = 1; i < extraPlugins.size(); i++) {
+				extraPlugin = extraPlugin.concat("," + extraPlugins.get(i));
+			}
+			setNativeExtraPlugins(extraPlugin);
+		}
+	}
+
+	/**
 	 * Returns a CKEDITOR.config object with the defined configuration
 	 * 
 	 * @return a CKEDITOR.config object
 	 */
 	public JavaScriptObject getConfigObject() {
-
 		if (toolbarName != null) {
 			setToolbarNameObject(toolbarName);
 		} else {
@@ -542,6 +580,10 @@ public class CKConfig {
 	private native void addNativeFontName(String fontName) /*-{
 		this.@com.axeiya.gwtckeditor.client.CKConfig::config.font_names = this.@com.axeiya.gwtckeditor.client.CKConfig::config.font_names
 				+ ";" + fontName;
+	}-*/;
+
+	private native void setNativeExtraPlugins(String extraPlugin) /*-{
+		this.@com.axeiya.gwtckeditor.client.CKConfig::config.extraPlugins = extraPlugin;
 	}-*/;
 
 	/**

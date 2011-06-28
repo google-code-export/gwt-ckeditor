@@ -1,10 +1,13 @@
 package com.axeiya.gwtckeditorsample.client;
 
 import com.axeiya.gwtckeditor.client.CKConfig;
+import com.axeiya.gwtckeditor.client.CKConfig.AVAILABLE_PLUGINS;
 import com.axeiya.gwtckeditor.client.CKConfig.TOOLBAR_OPTIONS;
 import com.axeiya.gwtckeditor.client.CKEditor;
 import com.axeiya.gwtckeditor.client.Toolbar;
 import com.axeiya.gwtckeditor.client.ToolbarLine;
+import com.axeiya.gwtckeditor.client.event.SaveEvent;
+import com.axeiya.gwtckeditor.client.event.SaveHandler;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -14,6 +17,12 @@ public class SampleApp implements EntryPoint {
 	@Override
 	public void onModuleLoad() {
 		final CKEditor cke = new CKEditor(CKConfig.full);
+		cke.addSaveHandler(new SaveHandler<CKEditor>() {
+			@Override
+			public void onSave(SaveEvent<CKEditor> event) {
+				Window.alert(event.getText());
+			}
+		});
 		RootPanel.get("full").add(cke);
 
 		final CKEditor ckeb = new CKEditor(CKConfig.basic);
@@ -63,6 +72,7 @@ public class SampleApp implements EntryPoint {
 		CONFIG_MODIFICATION.setWidth(Window.getClientWidth() / 2 + "");
 		// Set the toolbar to the config (replace the FULL preset toolbar)
 		CONFIG_MODIFICATION.setToolbar(t);
+		CONFIG_MODIFICATION.addExtraPlugin(AVAILABLE_PLUGINS.scayt);
 
 		final CKEditor ckec = new CKEditor(CONFIG_MODIFICATION);
 		RootPanel.get("config").add(ckec);
