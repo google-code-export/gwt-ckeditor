@@ -57,6 +57,8 @@ public class CKConfig {
 	private String filebrowserImageUploadUrl;
 	private String filebrowserFlashUploadUrl;
 	private List<String> extraPlugins;
+	private String topSharedSpace;
+	private String bottomSharedSpace;
 
 	private List<String> fontNames;
 	private List<String> fontSizes;
@@ -98,6 +100,7 @@ public class CKConfig {
 	 * Default basic configuration
 	 */
 	public static CKConfig basic = new CKConfig(PRESET_TOOLBAR.BASIC);
+	private boolean toolbarCanCollapse;
 
 	/**
 	 * Creates a default config with the FULL toolbar
@@ -444,6 +447,31 @@ public class CKConfig {
 		}
 	}
 
+	public void setToolbarCanCollapse(boolean canCollapse) {
+		toolbarCanCollapse = canCollapse;
+		setNativeToolbarCanCollapse(toolbarCanCollapse);
+	}
+
+	/**
+	 * Defines the id of the top common toolbar div
+	 * 
+	 * @param divId
+	 */
+	public void setTopSharedSpace(String divId) {
+		this.topSharedSpace = divId;
+		setNativeTopSharedSpace(divId);
+	}
+
+	/**
+	 * Defines the is of the bottom common toolbar div
+	 * 
+	 * @param divId
+	 */
+	public void setBottomSharedSpace(String divId) {
+		this.bottomSharedSpace = divId;
+		setNativeBottomSharedSpace(divId);
+	}
+
 	private void applyExtraPlugin() {
 		if (!extraPlugins.isEmpty()) {
 			String extraPlugin = extraPlugins.get(0);
@@ -584,6 +612,24 @@ public class CKConfig {
 
 	private native void setNativeExtraPlugins(String extraPlugin) /*-{
 		this.@com.axeiya.gwtckeditor.client.CKConfig::config.extraPlugins = extraPlugin;
+	}-*/;
+
+	private native void setNativeTopSharedSpace(String divId) /*-{
+		if (this.@com.axeiya.gwtckeditor.client.CKConfig::config.sharedSpaces == null) {
+			this.@com.axeiya.gwtckeditor.client.CKConfig::config.sharedSpaces = {};
+		}
+		this.@com.axeiya.gwtckeditor.client.CKConfig::config.sharedSpaces.top = divId;
+	}-*/;
+
+	private native void setNativeBottomSharedSpace(String divId) /*-{
+		if (this.@com.axeiya.gwtckeditor.client.CKConfig::config.sharedSpaces == null) {
+			this.@com.axeiya.gwtckeditor.client.CKConfig::config.sharedSpaces = {};
+		}
+		this.@com.axeiya.gwtckeditor.client.CKConfig::config.sharedSpaces.bottom = divId;
+	}-*/;
+
+	private native void setNativeToolbarCanCollapse(boolean canCollapse) /*-{
+		this.@com.axeiya.gwtckeditor.client.CKConfig::config.toolbarCanCollapse = canCollapse;
 	}-*/;
 
 	/**
@@ -755,6 +801,24 @@ public class CKConfig {
 
 	public String getFilebrowserFlashUploadUrl() {
 		return filebrowserFlashUploadUrl;
+	}
+
+	/**
+	 * Id of common top toolbar div
+	 * 
+	 * @return
+	 */
+	public String getTopSharedSpace() {
+		return topSharedSpace;
+	}
+
+	/**
+	 * Id of common bottom toolbar div
+	 * 
+	 * @return
+	 */
+	public String getBottomSharedSpace() {
+		return bottomSharedSpace;
 	}
 
 	/**

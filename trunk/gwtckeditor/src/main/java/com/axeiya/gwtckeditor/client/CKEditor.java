@@ -237,7 +237,7 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Ha
 
 	private native void setNativeHTML(String html) /*-{
 		var e = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
-		e.setData(html, new Function());
+		e.setData(html);
 	}-*/;
 
 	/**
