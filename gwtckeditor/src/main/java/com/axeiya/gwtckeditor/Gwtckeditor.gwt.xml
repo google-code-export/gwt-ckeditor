@@ -5,5 +5,5 @@
   <inherits name='com.google.gwt.user.User'/>
 
   <public path="public"/>
-  <script src="ckeditor/ckeditor_source.js"></script>
+  <script src="ckeditor/ckeditor.js"></script>
 </module>
