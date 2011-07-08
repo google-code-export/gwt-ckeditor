@@ -180,13 +180,15 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Ha
 				var lastc = e.document.getBody().getLast();
 				e.getSelection().selectElement(lastc);
 				var range = e.getSelection().getRanges()[0];
-				range.collapse(false);
-				range.setStart(lastc, range.startOffset);
-				try {
-					range.setEnd(lastc, range.endOffset);
-				} catch (err) {
+				if (range != null) {
+					range.collapse(false);
+					range.setStart(lastc, range.startOffset);
+					try {
+						range.setEnd(lastc, range.endOffset);
+					} catch (err) {
+					}
+					range.select();
 				}
-				range.select();
 			}
 
 		});
