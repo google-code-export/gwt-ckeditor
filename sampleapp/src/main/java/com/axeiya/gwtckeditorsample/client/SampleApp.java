@@ -1,5 +1,7 @@
 package com.axeiya.gwtckeditorsample.client;
 
+import java.util.Date;
+
 import com.axeiya.gwtckeditor.client.CKConfig;
 import com.axeiya.gwtckeditor.client.CKConfig.AVAILABLE_PLUGINS;
 import com.axeiya.gwtckeditor.client.CKConfig.TOOLBAR_OPTIONS;
@@ -9,6 +11,7 @@ import com.axeiya.gwtckeditor.client.ToolbarLine;
 import com.axeiya.gwtckeditor.client.event.SaveEvent;
 import com.axeiya.gwtckeditor.client.event.SaveHandler;
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 
@@ -73,10 +76,16 @@ public class SampleApp implements EntryPoint {
 		// Set the toolbar to the config (replace the FULL preset toolbar)
 		CONFIG_MODIFICATION.setToolbar(t);
 		CONFIG_MODIFICATION.addExtraPlugin(AVAILABLE_PLUGINS.scayt);
+		CONFIG_MODIFICATION.setAutoSaveLatencyInMillis(1000);
 
 		final CKEditor ckec = new CKEditor(CONFIG_MODIFICATION);
+		ckec.addSaveHandler(new SaveHandler<CKEditor>() {
+			@Override
+			public void onSave(SaveEvent<CKEditor> event) {
+				GWT.log("Save " + new Date().getTime() + " : " + event.getText());
+			}
+		});
 		RootPanel.get("config").add(ckec);
-
 	}
 
 }
