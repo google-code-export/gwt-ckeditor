@@ -17,7 +17,6 @@ package com.axeiya.gwtckeditor.client;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.i18n.client.LocaleInfo;
 
@@ -62,6 +61,7 @@ public class CKConfig {
 
 	private List<String> fontNames;
 	private List<String> fontSizes;
+	private int autoSaveLatencyInMillis;
 
 	private boolean tableResize;
 	private boolean shouldEnterSave = false;
@@ -120,11 +120,12 @@ public class CKConfig {
 		fontNames = new ArrayList<String>();
 		fontSizes = new ArrayList<String>();
 		extraPlugins = new ArrayList<String>();
+		autoSaveLatencyInMillis = 0;
 		setToolbar(toolbar);
 		LocaleInfo l = LocaleInfo.getCurrentLocale();
 		// GWT.log("Locale : "+l.getLocaleName(),null);//always returns default
 		if (l.getLocaleName().equals("default")) {
-			GWT.log("[gwt-CKEditor]Locale Property : " + getLocaleProperty(), null);
+			//GWT.log("[gwt-CKEditor]Locale Property : " + getLocaleProperty(), null);
 			this.setLanguage(getLocaleProperty());
 		} else
 			this.setLanguage(LocaleInfo.getCurrentLocale().getLocaleName().split("_")[0]);
@@ -841,6 +842,24 @@ public class CKConfig {
 	public void addFontSize(String fontSize) {
 		fontSizes.add(fontSize);
 		applyFontSizes();
+	}
+
+	/**
+	 * @return the max time between two key pressed before launching a save
+	 *         event.
+	 */
+	public int getAutoSaveLatencyInMillis() {
+		return autoSaveLatencyInMillis;
+	}
+
+	/**
+	 * Define the max time between two key pressed before launching a save
+	 * event. Set it to 0 if you don't want to use auto-save (default).
+	 * 
+	 * @param autoSaveLatencyInMillis
+	 */
+	public void setAutoSaveLatencyInMillis(int autoSaveLatencyInMillis) {
+		this.autoSaveLatencyInMillis = autoSaveLatencyInMillis;
 	}
 
 }
