@@ -29,6 +29,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -51,6 +52,41 @@ import com.google.gwt.user.client.ui.TextArea;
 public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, HasValueChangeHandlers<String>, ClickHandler, HasAlignment, HasHTML,
 		HasText {
 
+	/**
+	 * Used for catching Save event
+	 * 
+	 * @param o
+	 * @return
+	 */
+	private static native String getParentClassname(JavaScriptObject o) /*-{
+		var classname = o.parentNode.getAttribute("class");
+		if (classname == null)
+			return o.parentNode.className;
+		return classname;
+	}-*/;
+
+	private static class AutoSaveTimer extends Timer {
+
+		protected CKEditor editor;
+
+		public AutoSaveTimer(CKEditor editor) {
+			this.editor = editor;
+		}
+
+		@Override
+		public void run() {
+			editor.save();
+		}
+
+		public void delay() {
+			this.cancel();
+			if (editor.config.getAutoSaveLatencyInMillis() > 0) {
+				this.schedule(editor.config.getAutoSaveLatencyInMillis());
+			}
+		}
+
+	}
+
 	protected String name;
 	protected JavaScriptObject editor;
 	protected TextArea textArea;
@@ -65,9 +101,12 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Ha
 	protected Element div;
 	protected Node ckEditorNode;
 	protected HTML disabledHTML;
-	protected boolean focused = false;
 
+	protected AutoSaveTimer autoSaveTimer = new AutoSaveTimer(this);
+
+	protected boolean focused = false;
 	protected HorizontalAlignmentConstant hAlign = null;
+
 	protected VerticalAlignmentConstant vAlign = null;
 
 	/**
@@ -91,6 +130,86 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Ha
 		super();
 		this.config = config;
 		initCKEditor();
+	}
+
+	@Override
+	public HandlerRegistration addSaveHandler(SaveHandler<CKEditor> handler) {
+		return addHandler(handler, SaveEvent.getType());
+	}
+
+	@Override
+	public HandlerRegistration addValueChangeHandler(ValueChangeHandler<String> handler) {
+		return this.addHandler(handler, ValueChangeEvent.getType());
+	}
+
+	private native void destroyInstance()/*-{
+		var editor = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
+		if (editor) {
+			editor.destroy();
+		}
+	}-*/;
+
+	/**
+	 * Dispatch a blur CKEditor event to a ValueChangeEvent
+	 */
+	private void dispatchBlur() {
+		ValueChangeEvent.fire(this, this.getHTML());
+	}
+
+	private void dispatchKeyPressed() {
+		autoSaveTimer.delay();
+	}
+
+	/**
+	 * {@link #getHTML()}
+	 * 
+	 * @return
+	 */
+	public String getData() {
+		return getHTML();
+	}
+
+	@Override
+	public HorizontalAlignmentConstant getHorizontalAlignment() {
+		return hAlign;
+	}
+
+	/**
+	 * Returns the editor text
+	 * 
+	 * @return the editor text
+	 */
+	public String getHTML() {
+		if (replaced)
+			return getNativeHTML();
+		else {
+			return waitingText;
+		}
+	}
+
+	private native String getNativeHTML() /*-{
+		var e = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
+		return e.getData();
+	}-*/;
+
+	public native JavaScriptObject getSelection() /*-{
+		var e = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
+		return e.getSelection();
+	}-*/;
+
+	/**
+	 * Use getHTML() instead. Returns the editor text
+	 * 
+	 * @return the editor text
+	 */
+	@Deprecated
+	public String getText() {
+		return getNativeHTML();
+	}
+
+	@Override
+	public VerticalAlignmentConstant getVerticalAlignment() {
+		return vAlign;
 	}
 
 	/**
@@ -120,11 +239,6 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Ha
 			simplePanel.getElement().appendChild(div);
 			initWidget(simplePanel);
 		}
-	}
-
-	@Override
-	protected void onLoad() {
-		initInstance();
 	}
 
 	/**
@@ -159,6 +273,7 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Ha
 			}
 
 			listenToBlur();
+			listenToKey();
 			/*
 			 * if (config.getBreakLineChars() != null) {
 			 * setNativeBreakLineChars(config.getBreakLineChars()); }
@@ -169,6 +284,51 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Ha
 		}
 
 	}
+
+	public boolean isDisabled() {
+		return disabled;
+	}
+
+	private native void listenToBlur() /*-{
+		var me = this;
+		var e = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
+		e.on('blur', function(ev) {
+			me.@com.axeiya.gwtckeditor.client.CKEditor::dispatchBlur()();
+		});
+	}-*/;
+
+	private native void listenToKey() /*-{
+		var me = this;
+		var e = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
+		e.on('key', function(ev) {
+			me.@com.axeiya.gwtckeditor.client.CKEditor::dispatchKeyPressed()();
+		});
+	}-*/;
+
+	@Override
+	public void onClick(ClickEvent event) {
+		if (event.getRelativeElement().getAttribute("name").equals("submit")) {
+			event.stopPropagation();
+			save();
+		}
+	}
+
+	/**
+	 * Dispatch a save event
+	 */
+	protected void save() {
+		SaveEvent.fire(this, this, this.getHTML());
+	}
+
+	@Override
+	protected void onLoad() {
+		initInstance();
+	}
+
+	private native void replaceTextArea(Object o, JavaScriptObject config) /*-{
+		this.@com.axeiya.gwtckeditor.client.CKEditor::editor = $wnd.CKEDITOR
+				.replace(o, config);
+	}-*/;
 
 	private native void setAddFocusOnLoad(boolean focus)/*-{
 		var e = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
@@ -194,98 +354,13 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Ha
 		});
 	}-*/;
 
-	private native void listenToBlur() /*-{
-		var me = this;
-		var e = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
-		e.on('blur', function(ev) {
-			me.@com.axeiya.gwtckeditor.client.CKEditor::dispatchBlur()();
-		});
-	}-*/;
-
-	private native void replaceTextArea(Object o, JavaScriptObject config) /*-{
-		this.@com.axeiya.gwtckeditor.client.CKEditor::editor = $wnd.CKEDITOR
-				.replace(o, config);
-	}-*/;
-
-	private native String getNativeHTML() /*-{
-		var e = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
-		return e.getData();
-	}-*/;
-
-	public native JavaScriptObject getSelection() /*-{
-		var e = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
-		return e.getSelection();
-	}-*/;
-
-	private native void setNativeFocus(boolean focus)/*-{
-		if (focus) {
-			var e = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
-			if (e) {
-				e.focus();
-
-				var lastc = e.document.getBody().getLast();
-				e.getSelection().selectElement(lastc);
-				var range = e.getSelection().getRanges()[0];
-				range.collapse(false);
-				range.setStart(lastc, range.startOffset);
-				try {
-					range.setEnd(lastc, range.endOffset);
-				} catch (err) {
-				}
-				range.select();
-			}
-		}
-	}-*/;
-
-	private native void setNativeHTML(String html) /*-{
-		var e = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
-		e.setData(html);
-	}-*/;
-
 	/**
-	 * If you want to set the width, you must do so with the configuration
-	 * object before instanciating
-	 */
-	@Deprecated
-	@Override
-	public void setWidth(String width) {
-		super.setWidth(width);
-	}
-
-	/**
-	 * If you want to set the height, you must do so with the configuration
-	 * object before instanciating
-	 */
-	@Deprecated
-	@Override
-	public void setHeight(String height) {
-		super.setHeight(height);
-	}
-
-	/**
-	 * Use getHTML() instead. Returns the editor text
+	 * {@link #setHTML(String)}
 	 * 
-	 * @return the editor text
+	 * @param data
 	 */
-	@Deprecated
-	public String getText() {
-		return getNativeHTML();
-	}
-
-	/**
-	 * Set the focus natively if ckEditor is attached, alerts you if it's not
-	 * the case.
-	 * 
-	 * @param focus
-	 */
-	public void setFocus(boolean focus) {
-		if (replaced == true) {
-			setNativeFocus(focus);
-		} else {
-			Window.alert("You can't set the focus on startup with the method setFocus(boolean focus).\n"
-					+ "If you want to add focus to your instance on startup, use the config object\n"
-					+ "with the method setFocusOnStartup(boolean focus) instead.");
-		}
+	public void setData(String data) {
+		setHTML(data);
 	}
 
 	/**
@@ -360,49 +435,37 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Ha
 
 	}
 
-	private native void destroyInstance()/*-{
-		var editor = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
-		if (editor) {
-			editor.destroy();
-		}
-	}-*/;
-
 	/**
-	 * Returns the editor text
+	 * Set the focus natively if ckEditor is attached, alerts you if it's not
+	 * the case.
 	 * 
-	 * @return the editor text
+	 * @param focus
 	 */
-	public String getHTML() {
-		if (replaced)
-			return getNativeHTML();
-		else {
-			return waitingText;
+	public void setFocus(boolean focus) {
+		if (replaced == true) {
+			setNativeFocus(focus);
+		} else {
+			Window.alert("You can't set the focus on startup with the method setFocus(boolean focus).\n"
+					+ "If you want to add focus to your instance on startup, use the config object\n"
+					+ "with the method setFocusOnStartup(boolean focus) instead.");
 		}
 	}
 
 	/**
-	 * {@link #getHTML()}
-	 * 
-	 * @return
-	 */
-	public String getData() {
-		return getHTML();
-	}
-
-	/**
-	 * Use setHtml(String html) instead. Set the editor text
-	 * 
-	 * @param text
-	 *            The text to set
+	 * If you want to set the height, you must do so with the configuration
+	 * object before instanciating
 	 */
 	@Deprecated
-	public void setText(String text) {
+	@Override
+	public void setHeight(String height) {
+		super.setHeight(height);
+	}
+
+	@Override
+	public void setHorizontalAlignment(HorizontalAlignmentConstant align) {
+		this.hAlign = align;
 		if (replaced)
-			setNativeHTML(text);
-		else {
-			waitingText = text;
-			textWaitingForAttachment = true;
-		}
+			this.getElement().getParentElement().setAttribute("align", align.getTextAlignString());
 	}
 
 	/**
@@ -420,56 +483,45 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Ha
 		}
 	}
 
-	/**
-	 * {@link #setHTML(String)}
-	 * 
-	 * @param data
-	 */
-	public void setData(String data) {
-		setHTML(data);
-	}
+	private native void setNativeFocus(boolean focus)/*-{
+		if (focus) {
+			var e = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
+			if (e) {
+				e.focus();
 
-	/**
-	 * Used for catching Save event
-	 * 
-	 * @param o
-	 * @return
-	 */
-	private static native String getParentClassname(JavaScriptObject o) /*-{
-		var classname = o.parentNode.getAttribute("class");
-		if (classname == null)
-			return o.parentNode.className;
-		return classname;
+				var lastc = e.document.getBody().getLast();
+				e.getSelection().selectElement(lastc);
+				var range = e.getSelection().getRanges()[0];
+				range.collapse(false);
+				range.setStart(lastc, range.startOffset);
+				try {
+					range.setEnd(lastc, range.endOffset);
+				} catch (err) {
+				}
+				range.select();
+			}
+		}
 	}-*/;
 
-	@Override
-	public void onClick(ClickEvent event) {
-		if (event.getRelativeElement().getAttribute("name").equals("submit")) {
-			event.stopPropagation();
-			SaveEvent.fire(this, this, this.getHTML());
-		}
-	}
+	private native void setNativeHTML(String html) /*-{
+		var e = this.@com.axeiya.gwtckeditor.client.CKEditor::editor;
+		e.setData(html);
+	}-*/;
 
-	@Override
-	public HandlerRegistration addSaveHandler(SaveHandler<CKEditor> handler) {
-		return addHandler(handler, SaveEvent.getType());
-	}
-
-	@Override
-	public HorizontalAlignmentConstant getHorizontalAlignment() {
-		return hAlign;
-	}
-
-	@Override
-	public void setHorizontalAlignment(HorizontalAlignmentConstant align) {
-		this.hAlign = align;
+	/**
+	 * Use setHtml(String html) instead. Set the editor text
+	 * 
+	 * @param text
+	 *            The text to set
+	 */
+	@Deprecated
+	public void setText(String text) {
 		if (replaced)
-			this.getElement().getParentElement().setAttribute("align", align.getTextAlignString());
-	}
-
-	@Override
-	public VerticalAlignmentConstant getVerticalAlignment() {
-		return vAlign;
+			setNativeHTML(text);
+		else {
+			waitingText = text;
+			textWaitingForAttachment = true;
+		}
 	}
 
 	@Override
@@ -480,20 +532,13 @@ public class CKEditor extends Composite implements HasSaveHandlers<CKEditor>, Ha
 
 	}
 
-	public boolean isDisabled() {
-		return disabled;
-	}
-
-	@Override
-	public HandlerRegistration addValueChangeHandler(ValueChangeHandler<String> handler) {
-		return this.addHandler(handler, ValueChangeEvent.getType());
-	}
-
 	/**
-	 * Dispatch a blur CKEditor event to a ValueChangeEvent
+	 * If you want to set the width, you must do so with the configuration
+	 * object before instanciating
 	 */
-	private void dispatchBlur() {
-		ValueChangeEvent.fire(this, this.getHTML());
+	@Deprecated
+	@Override
+	public void setWidth(String width) {
+		super.setWidth(width);
 	}
-
 }
